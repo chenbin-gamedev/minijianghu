@@ -1,5 +1,5 @@
-package com.rover022.game.actors.mods {
-public class King extends Mod {
+package com.rover022.game.actors.mobs {
+public class King extends Mob {
 
     public function King() {
         super();

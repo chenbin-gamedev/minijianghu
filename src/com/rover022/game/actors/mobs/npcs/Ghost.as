@@ -1,4 +1,4 @@
-package com.rover022.game.actors.mods.npcs {
+package com.rover022.game.actors.mobs.npcs {
 public class Ghost extends NPC {
     public static const quest:Quest = new Quest();
 

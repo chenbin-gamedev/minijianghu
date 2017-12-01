@@ -1,4 +1,4 @@
-package com.rover022.game.actors.mods {
+package com.rover022.game.actors.mobs {
 import com.rover022.game.actors.Char;
 import com.rover022.game.actors.hero.Hero;
 import com.rover022.game.messages.Messages;
@@ -6,7 +6,7 @@ import com.rover022.game.messages.Messages;
 /**
  * 怪物模型
  */
-public class Mod extends Char {
+public class Mob extends Char {
     public var SLEEPING:AiState = new Sleepiing();
     public var HUNTING:AiState = new Hunting();
     public var WANDERING:AiState = new Wandering();
@@ -26,11 +26,11 @@ public class Mod extends Char {
     //
 
 
-    public function Mod() {
+    public function Mob() {
         super();
         alignment = ENEMY;
         actPriority = 2;
-        name = Messages.get(this, "name");
+//        name = Messages.get(this.toString(), "name");
     }
 
     override public function storeInBundle():void {
@@ -38,7 +38,7 @@ public class Mod extends Char {
     }
 
     public function act():Boolean {
-
+        return false;
     }
 
     public function chooseEnemy():Char {

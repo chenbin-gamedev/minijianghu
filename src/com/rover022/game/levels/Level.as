@@ -1,7 +1,7 @@
 package com.rover022.game.levels {
 import com.rover022.game.actors.Actor;
 import com.rover022.game.actors.Char;
-import com.rover022.game.actors.mods.Mod;
+import com.rover022.game.actors.mobs.Mob;
 import com.rover022.game.items.Item;
 import com.rover022.game.levels.traps.Trap;
 import com.rover022.game.plants.Plant;
@@ -12,7 +12,7 @@ import starling.display.Sprite;
 public class Level {
     public var width:int;
     public var height:int;
-    public var length;
+    public var length:int;
 
     public var map:Array;
     public var visited:Array;
@@ -34,11 +34,13 @@ public class Level {
     public var locked:Boolean;
     public var entrance:int;
     public var exit:int;
+    public var heaps:*;
+    public var mobs:Array;
 
     public function Level() {
     }
 
-    public function create() {
+    public function create():void {
 
     }
 
@@ -65,13 +67,13 @@ public class Level {
 
     }
 
-    public function seal() {
+    public function seal() :void{
         if (!locked) {
             locked = true;
         }
     }
 
-    public function unseal() {
+    public function unseal():void {
         if (locked) {
             locked = false;
         }
@@ -82,7 +84,7 @@ public class Level {
     }
 
     //todo
-    public function findMod(pos:int):Mod {
+    public function findMod(pos:int):Mob {
         return null
     }
 
@@ -106,15 +108,15 @@ public class Level {
         return null;
     }
 
-    public function buildFlagMap() {
+    public function buildFlagMap():void {
 
     }
 
-    public function destroy() {
+    public function destroy():void {
 
     }
 
-    public function cleanWalls() {
+    public function cleanWalls():void {
 
     }
 
@@ -163,7 +165,7 @@ public class Level {
      * 怪物点击
      * @param mod
      */
-    public function modPress(mod:Mod):void {
+    public function modPress(mod:Mob):void {
 
     }
 

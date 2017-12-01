@@ -1,4 +1,4 @@
-package com.rover022.game.actors.mods.npcs {
+package com.rover022.game.actors.mobs.npcs {
 import starling.display.Quad;
 
 public class Wandmaker extends NPC {

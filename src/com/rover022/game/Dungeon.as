@@ -2,8 +2,8 @@ package com.rover022.game {
 import com.rover022.game.actors.Actor;
 import com.rover022.game.actors.Char;
 import com.rover022.game.actors.hero.Hero;
-import com.rover022.game.actors.mods.npcs.Ghost;
-import com.rover022.game.actors.mods.npcs.Wandmaker;
+import com.rover022.game.actors.mobs.npcs.Ghost;
+import com.rover022.game.actors.mobs.npcs.Wandmaker;
 import com.rover022.game.items.Generator;
 import com.rover022.game.journal.Notes;
 import com.rover022.game.levels.Level;

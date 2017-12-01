@@ -1,5 +1,6 @@
 package com.rover022.game.actors {
 import com.rover022.game.actors.buffs.Buff;
+import com.rover022.game.actors.mobs.Mob;
 
 import starling.display.Sprite;
 
@@ -44,7 +45,7 @@ public class Actor extends Sprite {
      * 添加演员
      * @param char
      */
-    public static function add(char:Char):void {
+    public static function add(char:Actor):void {
 
     }
 
@@ -69,6 +70,10 @@ public class Actor extends Sprite {
     }
 
     public static function resetNextID():void {
+
+    }
+
+    public static function addDelayed(mob:Mob, delay:Number):void {
 
     }
 }

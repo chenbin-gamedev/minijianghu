@@ -23,6 +23,7 @@ public class Hero extends Char {
     public var visibleEnemies:Array = [];
     public var midVisionEnemies:Array = [];
     public var belongings:Belongings;
+    public var resting:Boolean;
 
 
     public function Hero() {

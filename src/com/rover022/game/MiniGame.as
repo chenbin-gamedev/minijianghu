@@ -26,7 +26,7 @@ public class MiniGame extends Scene {
     public static var assets:AssetManager;
 
     public function MiniGame() {
-
+        instance = this;
     }
 
 
@@ -64,11 +64,10 @@ public class MiniGame extends Scene {
         if (instance.scene) {
             instance.scene.removeFromParent();
             instance.scene.destroy();
-        } else {
-            instance.scene = new c();
-            instance.addChild(instance.scene);
-            instance.scene.create();
         }
+        instance.scene = new c();
+        instance.addChild(instance.scene);
+        instance.scene.create();
         if (callBack) {
             callBack.call(null);
         }

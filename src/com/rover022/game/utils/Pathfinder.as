@@ -52,7 +52,7 @@ public class Pathfinder {
      * Obstacle map is a two Dimensional Array Containing 1 or 0 values where 1 is obstacle
      * Also please provide map dimensions
      */
-    public function loadMap(m:Array, dX:Number, dY:Number) {
+    public function loadMap(m:Array, dX:Number, dY:Number):void {
         map = m;
         tmpMap = new Array();
         dimensionX = dX;
@@ -114,7 +114,7 @@ public class Pathfinder {
      */
     private function shortenPathArray(path:Array):Array {
         var shortPath:Array = new Array();
-        var shortIter = 0;
+        var shortIter:Number = 0;
         var diffX:Number = 0;
         var diffY:Number = 0;
         for (var i:Number = 0; i < path.length; i++) {

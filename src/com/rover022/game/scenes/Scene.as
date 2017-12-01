@@ -22,6 +22,10 @@ public class Scene extends Sprite {
     }
 
     public function create():void {
+
+    }
+
+    public function initTest():void {
         _backButton = new MenuButton("Back", 88, 50);
         _backButton.x = Constants.CenterX - _backButton.width / 2;
         _backButton.y = Constants.GameHeight - _backButton.height + 12;

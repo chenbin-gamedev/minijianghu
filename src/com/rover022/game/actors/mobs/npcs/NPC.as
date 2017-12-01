@@ -1,7 +1,7 @@
-package com.rover022.game.actors.mods.npcs {
-import com.rover022.game.actors.mods.Mod;
+package com.rover022.game.actors.mobs.npcs {
+import com.rover022.game.actors.mobs.Mob;
 
-public class NPC extends Mod {
+public class NPC extends Mob {
     public var quest:Quest = new Quest();
 
     public function NPC() {
