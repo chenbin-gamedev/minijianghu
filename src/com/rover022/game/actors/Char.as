@@ -67,7 +67,8 @@ public class Char extends Actor {
         }
     }
 
-    override public function onRemove() {
+    override public function onRemove():void {
+        super .onRemove()
         for each (var buff:Buff in buffs) {
             buff.deach();
         }
@@ -95,7 +96,7 @@ public class Char extends Actor {
 
     }
 
-    public function distance(other:Char) {
+    public function distance(other:Char):int {
         return MiniGame.distance(pos, other.pos);
     }
 

@@ -1,11 +1,8 @@
 package com.rover022.game {
-import avmplus.INCLUDE_CONSTRUCTOR;
-
 import com.rover022.game.actors.Actor;
 import com.rover022.game.actors.Char;
 import com.rover022.game.actors.hero.Hero;
 import com.rover022.game.actors.mods.npcs.Ghost;
-import com.rover022.game.actors.mods.npcs.Quest;
 import com.rover022.game.actors.mods.npcs.Wandmaker;
 import com.rover022.game.items.Generator;
 import com.rover022.game.journal.Notes;
@@ -13,7 +10,6 @@ import com.rover022.game.levels.Level;
 import com.rover022.game.levels.SewerLevel;
 import com.rover022.game.levels.rooms.secret.SecretRoom;
 import com.rover022.game.levels.rooms.special.SpecialRoom;
-import com.rover022.game.scenes.StartScene;
 
 public class Dungeon {
     public static var level:Level;

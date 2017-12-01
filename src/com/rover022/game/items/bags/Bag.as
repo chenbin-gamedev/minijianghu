@@ -21,7 +21,7 @@ public class Bag extends Item {
     }
 
     override public function collect(src:Bag):Boolean {
-        super .collect(src);
+        return super.collect(src);
     }
 
 }

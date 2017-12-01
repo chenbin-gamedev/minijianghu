@@ -1,19 +1,17 @@
-package utils
-{
-    import flash.geom.Rectangle;
+package utils {
+import com.rover022.game.MiniGame;
 
-    import starling.display.Button;
+import flash.geom.Rectangle;
 
-    /** A simple button that uses "scale9grid" with a single texture. */
-    public class MenuButton extends Button
-    {
-        public function MenuButton(text:String, width:Number=128, height:Number=32)
-        {
-            super(Game.assets.getTexture("button"), text);
+import starling.display.Button;
 
-            this.scale9Grid = new Rectangle(12.5, 12.5, 20, 20);
-            this.width = width;
-            this.height = height;
-        }
+/** A simple button that uses "scale9grid" with a single texture. */
+public class MenuButton extends Button {
+    public function MenuButton(text:String, width:Number = 128, height:Number = 32) {
+        super(MiniGame.assets.getTexture("button"), text);
+        this.scale9Grid = new Rectangle(12.5, 12.5, 20, 20);
+        this.width = width;
+        this.height = height;
     }
+}
 }

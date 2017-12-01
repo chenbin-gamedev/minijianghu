@@ -3,5 +3,7 @@ public class StartScene extends PixelScene {
     public function StartScene() {
         super();
     }
+
+
 }
 }

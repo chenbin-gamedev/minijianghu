@@ -20,15 +20,15 @@ public class Actor extends Sprite {
         this.time += _time;
     }
 
-    public function cooldown() {
+    public function cooldown():void {
 
     }
 
-    public function onAdd() {
+    public function onAdd():void {
 
     }
 
-    public function onRemove() {
+    public function onRemove():void {
 
     }
 
