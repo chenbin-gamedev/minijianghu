@@ -9,5 +9,13 @@ public class SpecialRoom extends Room {
     public static function initForRun():void {
 
     }
+
+    public static function restoreRoomsFromBundle():void {
+
+    }
+
+    public static function resetPitRoom(i:int):void {
+
+    }
 }
 }

@@ -4,7 +4,7 @@ public class PixelScene extends Scene {
         super();
     }
 
-    protected function fadeIn(color:int, light:Boolean):void {
+    protected function fadeIn(color:int = 0x0, light:Boolean = false):void {
         //    add(new Fader(color, light));
 
     }

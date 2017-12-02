@@ -1,7 +1,10 @@
 package com.rover022.game.actors.mobs {
+import com.rover022.game.Dungeon;
 import com.rover022.game.actors.Char;
 import com.rover022.game.actors.hero.Hero;
-import com.rover022.game.messages.Messages;
+import com.rover022.game.utils.DebugTool;
+
+import flash.geom.Point;
 
 /**
  * 怪物模型
@@ -22,15 +25,21 @@ public class Mob extends Char {
     public var enemy:Char;
     public var enemySeen:Boolean;
     public var alerted:Boolean = false;
+    private var level:int;
 
     //
-
 
     public function Mob() {
         super();
         alignment = ENEMY;
         actPriority = 2;
 //        name = Messages.get(this.toString(), "name");
+    }
+
+    override protected function initDrawDebug():void {
+        if (Dungeon.isdebug) {
+            addChild(DebugTool.makeImage(SIZE, 0xff0000));
+        }
     }
 
     override public function storeInBundle():void {
@@ -70,6 +79,8 @@ public class Mob extends Char {
     }
 
     public function reset():Boolean {
+        x = SIZE * pos.x;
+        y = SIZE * pos.y;
         return true;
     }
 
@@ -77,6 +88,15 @@ public class Mob extends Char {
 
     }
 
+    public function beckon(pos:Point):void {
+
+    }
+
+    public function spawn(level:int):void {
+        this.level = level;
+        HT = (2 + level) * 4;
+        defenseSkill = 9 + level;
+    }
 }
 }
 class AiState {

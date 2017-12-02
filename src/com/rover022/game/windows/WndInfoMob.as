@@ -1,4 +1,5 @@
-package com.rover022.game.ui {
+package com.rover022.game.windows {
+import com.rover022.game.ui.*;
 import com.rover022.game.actors.mobs.Mob;
 
 public class WndInfoMob extends WndTabbed {

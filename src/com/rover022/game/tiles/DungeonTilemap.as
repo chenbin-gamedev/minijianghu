@@ -1,14 +1,19 @@
 package com.rover022.game.tiles {
-public class DungeonTilemap extends Tilemap {
-    public static var SIZE:int = 16;
+import flash.geom.Point;
 
+public class DungeonTilemap extends Tilemap {
+    public static var SIZE:int = 58;
 
     public function DungeonTilemap() {
         super();
     }
 
-    public function screenToTile(x:Number, y:Number, b:Boolean):int {
-        return 1;
+    public function screenToTile(x:Number, y:Number, b:Boolean):Point {
+        return new Point();
+    }
+
+    public static function setupVariance(length:uint, seedCurDepth:*):void {
+
     }
 }
 }

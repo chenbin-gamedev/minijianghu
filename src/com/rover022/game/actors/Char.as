@@ -1,12 +1,17 @@
 package com.rover022.game.actors {
+import com.rover022.game.Dungeon;
 import com.rover022.game.MiniGame;
 import com.rover022.game.actors.buffs.Buff;
+import com.rover022.game.utils.DebugTool;
+
+import flash.geom.Point;
 
 public class Char extends Actor {
 
-    public var pos:int;
+    public var pos:Point = new Point();
 //    public var sprite:CharSprite;
 //    public var name:String = "mod";
+
     //优先级
     public var actPriority:int;
     public var HT:int;
@@ -31,14 +36,20 @@ public class Char extends Actor {
 
     public var buffs:Array = [];
 
-
     public function Char() {
+        pos = new Point();
+        initDrawDebug();
+    }
+
+    protected function initDrawDebug():void {
+        if (Dungeon.isdebug) {
+            addChild(DebugTool.makeImage(SIZE, 0xff00ff));
+        }
     }
 
     public function attack(enemy:Char):Boolean {
         return true;
     }
-
 
     public function attackProc(enemy:Char, damage:int):int {
         return 0;
@@ -55,7 +66,6 @@ public class Char extends Actor {
 
     }
 
-
     override public function addBuff(buff:Buff):void {
         buffs.push(buff);
     }
@@ -68,7 +78,7 @@ public class Char extends Actor {
     }
 
     override public function onRemove():void {
-        super .onRemove()
+        super.onRemove()
         for each (var buff:Buff in buffs) {
             buff.deach();
         }

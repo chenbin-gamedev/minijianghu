@@ -1,37 +1,50 @@
 package com.rover022.game.scenes {
 import com.rover022.game.Dungeon;
+import com.rover022.game.TouchArea;
 import com.rover022.game.actors.Actor;
 import com.rover022.game.actors.blobs.Blob;
+import com.rover022.game.actors.hero.Hero;
 import com.rover022.game.actors.mobs.Mob;
 import com.rover022.game.items.Heap;
 import com.rover022.game.items.Item;
+import com.rover022.game.items.potions.Honeypot;
+import com.rover022.game.items.potions.Potion;
+import com.rover022.game.levels.Level;
 import com.rover022.game.levels.traps.Trap;
 import com.rover022.game.messages.Messages;
 import com.rover022.game.plants.Plant;
+import com.rover022.game.tiles.DungenTerrainTilemap;
+import com.rover022.game.tiles.DungeonTilemap;
+import com.rover022.game.ui.GameLog;
 import com.rover022.game.ui.StatusPane;
 import com.rover022.game.ui.Toast;
 import com.rover022.game.ui.Toolbar;
 import com.rover022.game.ui.Window;
-import com.rover022.game.ui.WndHero;
-import com.rover022.game.ui.WndInfoMob;
-import com.rover022.game.ui.WndInfoPlant;
-import com.rover022.game.ui.WndInfoTrap;
-import com.rover022.game.ui.WndMessage;
+import com.rover022.game.windows.WndHero;
+import com.rover022.game.windows.WndInfoMob;
+import com.rover022.game.windows.WndInfoPlant;
+import com.rover022.game.windows.WndInfoTrap;
+import com.rover022.game.windows.WndMessage;
+
+import flash.geom.Point;
 
 import starling.display.Sprite;
+import starling.events.Event;
 
 /**
  * 游戏主场景
  * 1只会有一个
  * 2集合了游戏内大量经常使用到的方法
- * 3
+ *
+ *
+ *
  *
  */
 public class GameScene extends PixelScene {
     public static var scene:GameScene;
     public var pane:StatusPane;
 
-    private static var cellSelector:CellSelector;
+    public static var cellSelector:CellSelector;
 
     //地面层
     public var terrain:Sprite;
@@ -68,14 +81,25 @@ public class GameScene extends PixelScene {
     //
     public var toolbar:Toolbar;
     public var prompt:Toast = new Toast();
+    public var hero:Hero;
+    public var tiles:DungenTerrainTilemap;
+    public var log:GameLog;
+    public var defaultCellListener:Function;
+
+    //
+    public var interlevelScene:InterlevelScene = new InterlevelScene();
 
     public function GameScene() {
         super();
+        trace("GameScene init");
     }
 
     override public function create():void {
         super.create();
         trace("GameScene is create");
+        cellSelector = new CellSelector();
+        cellSelector.y = 50;
+        addChild(cellSelector);
         terrain = makeSprite();
         customTiles = makeSprite();
         levelVisuals = makeSprite();
@@ -92,14 +116,68 @@ public class GameScene extends PixelScene {
         statuses = makeSprite();
         emoicons = makeSprite();
         healthIndicators = makeSprite();
+        scene = this;
+        //关卡设计面板初始化一次
+        interlevelScene.descend();
+        //假装先配置一个地下城
+        Dungeon.level = Level.makeNewLevel();
+        //
+        DungeonTilemap.setupVariance(Dungeon.level.map.length, Dungeon.seedCurDepth());
+        tiles = new DungenTerrainTilemap();
+        tiles.map(null, 6);
+        terrain.addChild(tiles);
+        //添加怪物入场
+        trace("怪物数量:", Dungeon.level.mobs.length);
+        for each (var mob:Mob in Dungeon.level.mobs) {
+            addMobSprite(mob);
+            mob.beckon(Dungeon.hero.pos);
+        }
+        //添加障碍物
+        trace("障碍物数量:", Dungeon.level.blobs.length);
+        for each (var blob:Blob in Dungeon.level.blobs) {
+            blob.emitter = null;
+            addBlobSprite(blob);
+        }
+        //添加英雄
+        hero = Dungeon.hero;
+        trace(hero.pos);
+        hero.place(Dungeon.hero.pos);
+        hero.updataeArmor();
+        mobs.addChild(hero);
+        //
+        log = new GameLog();
+        addChild(log);
+        //放置道具
+        trace("道具数量:", Dungeon.droppedItems.length);
+        var dropped:Array = Dungeon.droppedItems;
+        for each (var item:Item in dropped) {
+            var pos:int = Dungeon.level.randomRespawnCell();
+            if (item is Potion) {
+
+            } else if (item is Plant) {
+
+            } else if (item is Honeypot) {
+
+            }
+            Dungeon.level.drop(item, pos);
+        }
+        //
+        Dungeon.hero.next();
+        //Camera
+        fadeIn();
+        //初始化点击事件
+        selectCall(defaultCellListener);
     }
+
+//    private function onTouchAreaClick(event:Event):void {
+//        cellSelector(event);
+//    }
 
     private function makeSprite():Sprite {
         var _s:Sprite = new Sprite();
-        addChild(_s)
+        cellSelector.addChild(_s);
         return _s;
     }
-
 
     public static function addPlant(plant:Plant):void {
         if (scene != null) {
@@ -133,7 +211,7 @@ public class GameScene extends PixelScene {
     }
 
     public static function addMob(mob:Mob):void {
-        Dungeon.level.mobs.add(mob);
+        Dungeon.level.mobs.push(mob);
         Actor.add(mob);
         scene.addMobSprite(mob);
     }
@@ -152,7 +230,6 @@ public class GameScene extends PixelScene {
 //        if (scene != null) scene.healthIndicators.add(indicator);
 //    }
 
-
     /**
      * 选择了单元格
      * @param onListen
@@ -166,7 +243,7 @@ public class GameScene extends PixelScene {
      * @param item
      * @param pos
      */
-    public static function pickUp(item:Item, pos:int):void {
+    public static function pickUp(item:Item, pos:Point):void {
 
     }
 
@@ -255,10 +332,7 @@ public class GameScene extends PixelScene {
 
     public static function afterObserve():void {
         if (scene != null) {
-//            for (Mob mob : Dungeon.level.mobs) {
-//                if (mob.sprite != null)
-//                    mob.sprite.visible = Dungeon.level.heroFOV[mob.pos];
-//            }
+
         }
     }
 
@@ -274,43 +348,22 @@ public class GameScene extends PixelScene {
      * 游戏结束
      */
     public static function gameOver():void {
-//        Banner
-//        gameOver = new Banner(BannerSprites.get(BannerSprites.Type.GAME_OVER));
-//        gameOver.show(0x000000, 1
-//        f
-//    )
-//        ;
-//        scene.showBanner(gameOver);
-//
-//        Sample.INSTANCE.play(Assets.SND_DEATH);
+
     }
 
     /**
      * boss 被杀
      */
     public static function bossSlain():void {
-//        if (Dungeon.hero.isAlive()) {
-//            Banner
-//            bossSlain = new Banner(BannerSprites.get(BannerSprites.Type.BOSS_SLAIN));
-//            bossSlain.show(0xFFFFFF, 0.3
-//            f, 5
-//            f
-//        )
-//            ;
-//            scene.showBanner(bossSlain);
-//
-//            Sample.INSTANCE.play(Assets.SND_BOSS);
-//        }
+
     }
 
-    public static function handleCell(cell:int):void {
+    public static function handleCell(cell:Point):void {
         cellSelector.select(cell);
     }
 
     public static function selectCell(src:Object):void {
-//        cellSelector.listener = listener;
-//        if (scene != null)
-//            scene.prompt(listener.prompt());
+
     }
 
     private static function cancelCellSelector():Boolean {
@@ -325,20 +378,6 @@ public class GameScene extends PixelScene {
 
     public static function selectItem(item:Item):Item {
         cancelCellSelector();
-
-//        WndBag wnd =
-//                mode == Mode.SEED ?
-//                        WndBag.getBag( SeedPouch.class, listener, mode, title ) :
-//                        mode == Mode.SCROLL ?
-//                                WndBag.getBag( ScrollHolder.class, listener, mode, title ) :
-//                                mode == Mode.POTION ?
-//                                        WndBag.getBag( PotionBandolier.class, listener, mode, title ) :
-//                                        mode == Mode.WAND ?
-//                                                WndBag.getBag( WandHolster.class, listener, mode, title ) :
-//                                                WndBag.lastBag( listener, mode, title );
-//
-//        if (scene != null) scene.addToFront( wnd );
-
         return item;
     }
 
@@ -384,12 +423,7 @@ public class GameScene extends PixelScene {
         } else if (o is Mob) {
             GameScene.show(new WndInfoMob(o as Mob))
         } else if (o is Heap) {
-//            var heap:Heap = o as Heap;
-//            if (heap.type == Heap.Type.FOR_SALE && heap.size() == 1 && heap.peek().price() > 0) {
-//                GameScene.show(new WndTradeItem(heap, false));
-//            } else {
-//                GameScene.show(new WndInfoItem(heap));
-//            }
+
         } else if (o is Plant) {
             GameScene.show(new WndInfoPlant(o as Plant));
         } else if (o is Trap) {
@@ -399,16 +433,11 @@ public class GameScene extends PixelScene {
         }
     }
 
-
     public function addToFront(wnd:Window):void {
-
+        addChild(wnd);
     }
 
     public function addTrapSprite(trap:Trap):void {
-
-    }
-
-    public function addBlobSprite(gas:Blob):void {
 
     }
 
@@ -420,12 +449,17 @@ public class GameScene extends PixelScene {
 
     }
 
-    public function addPlantSprite(plant:Plant):void {
+    public function addBlobSprite(gas:Blob):void {
+        gases.addChild(gas);
+    }
 
+    public function addPlantSprite(plant:Plant):void {
+        plants.addChild(plant)
     }
 
     public function addMobSprite(mob:Mob):void {
-
+        mobs.addChild(mob);
+        mob.reset();
     }
 }
 }

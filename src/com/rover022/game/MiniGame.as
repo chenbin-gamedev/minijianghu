@@ -1,18 +1,23 @@
 package com.rover022.game {
 import com.rover022.game.scenes.GameScene;
+import com.rover022.game.scenes.PixelScene;
 import com.rover022.game.scenes.Scene;
+
+import flash.geom.Point;
 
 import flash.utils.getDefinitionByName;
 import flash.utils.getQualifiedClassName;
 
 import starling.events.Event;
-
 import starling.utils.AssetManager;
 
 /**
  * 实现了GAME中的很多方法
+ * 切换内容场景;
+ * 方法1 :switchScene
+ *
  */
-public class MiniGame extends Scene {
+public class MiniGame extends PixelScene {
     public static var instance:MiniGame;
     public static var width:Number;
     public static var height:Number;
@@ -29,7 +34,6 @@ public class MiniGame extends Scene {
         instance = this;
     }
 
-
     override public function onBackPressed(e:Event = null):void {
 //        var game:GameScene = new GameScene();
         switchScene(GameScene)
@@ -37,8 +41,8 @@ public class MiniGame extends Scene {
 
     override public function create():void {
         super.create();
-        trace("MiniGame is create");
         instance = this;
+        trace("MiniGame engine is create");
         //onSurfaceCreated();
     }
 
@@ -49,7 +53,6 @@ public class MiniGame extends Scene {
     public function destroyGame():void {
 
     }
-
 
     public static function resetScene():void {
         var className:String = getQualifiedClassName(instance);
@@ -77,7 +80,6 @@ public class MiniGame extends Scene {
         return instance.scene;
     }
 
-
     override public function update():void {
         scene.update();
     }
@@ -95,7 +97,7 @@ public class MiniGame extends Scene {
 
     }
 
-    public static function distance(pos:int, pos2:int):int {
+    public static function distance(pos:Point, pos2:Point):int {
         return 0;
     }
 

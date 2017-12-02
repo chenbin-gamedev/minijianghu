@@ -5,7 +5,7 @@ public class Messages {
     public function Messages() {
     }
 
-    public static function get(mod:String, _name:String):String {
+    public static function get(mod:*, _name:String):String {
         return "";
     }
 }

@@ -1,4 +1,6 @@
 package com.rover022.game.tiles {
+import com.rover022.game.actors.Actor;
+
 import starling.display.Sprite;
 
 public class Tilemap extends Sprite {
@@ -6,10 +8,9 @@ public class Tilemap extends Sprite {
         super();
     }
 
-
     protected var data:Array;
-    protected var mapWidth:int;
-    protected var mapHeight:int;
+    protected var mapWidth:int = 6;
+    protected var mapHeight:int = 6;
     protected var size:int;
 
     private var cellW:Number;
@@ -19,25 +20,27 @@ public class Tilemap extends Sprite {
     protected var quads:Array;
     protected var buffer:Array;
 
+    //
     public function map(data:Array, cols:int):void {
-
         this.data = data;
-
-        mapWidth = cols;
-        mapHeight = data.length / cols;
+        //mapWidth = cols;
+        //mapHeight = data.length / cols;
         size = mapWidth * mapHeight;
-
         width = cellW * mapWidth;
         height = cellH * mapHeight;
-
-        // quads = Quad.createSet( size );
-
         updateMap();
     }
 
     //forces a full update, including new buffer
     public function updateMap():void {
-
+        for (var i:int = 0; i < mapWidth; i++) {
+            for (var j:int = 0; j < mapHeight; j++) {
+                var tile:Tile = new Tile();
+                tile.x = Actor.SIZE * i;
+                tile.y = Actor.SIZE * j;
+                addChild(tile);
+            }
+        }
     }
 
     public function updateMapCell(cell:int):void {
@@ -53,11 +56,9 @@ public class Tilemap extends Sprite {
         moveToUpdating();
     }
 
-
     public function draw():void {
 //        super.draw();
     }
-
 
     public function destroy():void {
 
@@ -66,7 +67,6 @@ public class Tilemap extends Sprite {
     protected function needsRender(pos:int):Boolean {
         return true;
     }
-
 
 }
 }

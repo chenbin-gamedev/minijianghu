@@ -15,5 +15,9 @@ public class Notes {
     public static function reset():void {
 
     }
+
+    public static function restoreRoomsFromBundle():void {
+
+    }
 }
 }

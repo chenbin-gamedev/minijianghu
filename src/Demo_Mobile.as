@@ -23,6 +23,8 @@ import starling.utils.ScaleMode;
 import starling.utils.StringUtil;
 import starling.utils.SystemUtil;
 
+import test.TestStartScene;
+
 import utils.ProgressBar;
 
 // This project requires the sources of the "demo" project. Add them either by
@@ -40,9 +42,7 @@ public class Demo_Mobile extends Sprite {
     private var _progressBar:ProgressBar;
 
     public function Demo_Mobile() {
-        // We develop the game in a *fixed* coordinate system of 320x480. The game might
-        // then run on a device with a different resolution; for that case, we zoom the
-        // viewPort to the optimal size for any display and load the optimal textures.
+
 
         var iOS:Boolean = SystemUtil.platform == "IOS";
         var stageSize:Rectangle = new Rectangle(0, 0, StageWidth, StageHeight);
@@ -50,6 +50,7 @@ public class Demo_Mobile extends Sprite {
         var viewPort:Rectangle = RectangleUtil.fit(stageSize, screenSize, ScaleMode.SHOW_ALL, false);
         var scaleFactor:int = viewPort.width < 480 ? 1 : 2; // midway between 320 and 640
         Starling.multitouchEnabled = true; // useful on mobile devices
+        // 只接受Game级别的参数
         _starling = new Starling(MiniGame, stage, viewPort);
         _starling.stage.stageWidth = StageWidth;  // <- same size on all devices!
         _starling.stage.stageHeight = StageHeight; // <- same size on all devices!
@@ -111,6 +112,9 @@ public class Demo_Mobile extends Sprite {
     private function startGame(assets:AssetManager):void {
         var game:MiniGame = _starling.root as MiniGame;
         game.start(assets);
+        //for test
+        MiniGame.switchScene(TestStartScene);
+        //
         setTimeout(removeElements, 150); // delay to make 100% sure there's no flickering.
     }
 

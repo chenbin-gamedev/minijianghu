@@ -9,5 +9,9 @@ public class SecretRoom extends Room {
     public static function initForRun():void {
 
     }
+
+    public static function restoreRoomsFromBundle():void {
+
+    }
 }
 }

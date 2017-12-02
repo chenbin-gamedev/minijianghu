@@ -2,15 +2,27 @@ package com.rover022.game.actors {
 import com.rover022.game.actors.buffs.Buff;
 import com.rover022.game.actors.mobs.Mob;
 
+import flash.geom.Point;
+
 import starling.display.Sprite;
 
 public class Actor extends Sprite {
     public static var TICK:Number = 1;
     public var time:Number;
     public var id:int = 0;
+    public static var SIZE:int = 58;
 
     public function Actor() {
         super();
+    }
+
+    public function act():Boolean {
+        return false;
+    }
+
+    public function place(pos:Point):void {
+        x = pos.x * SIZE;
+        y = pos.y * SIZE;
     }
 
     public function next():void {

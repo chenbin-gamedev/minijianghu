@@ -1,6 +1,8 @@
 package com.rover022.game.actors.mobs.npcs {
 import com.rover022.game.actors.mobs.Mob;
 
+import flash.geom.Point;
+
 public class NPC extends Mob {
     public var quest:Quest = new Quest();
 
@@ -14,7 +16,7 @@ public class NPC extends Mob {
 
     }
 
-    public function beckon(cell:int):void {
+    override public function beckon(cell:Point):void {
 
     }
 

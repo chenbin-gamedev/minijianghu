@@ -1,11 +1,16 @@
 package com.rover022.game.levels {
+import com.rover022.game.Dungeon;
 import com.rover022.game.actors.Actor;
 import com.rover022.game.actors.Char;
+import com.rover022.game.actors.blobs.Blob;
+import com.rover022.game.actors.mobs.King;
 import com.rover022.game.actors.mobs.Mob;
 import com.rover022.game.items.Item;
 import com.rover022.game.levels.traps.Trap;
 import com.rover022.game.plants.Plant;
 import com.rover022.game.utils.Pathfinder;
+
+import flash.geom.Point;
 
 import starling.display.Sprite;
 
@@ -27,15 +32,17 @@ public class Level {
     //
     public var mods:Array;
     public var plants:Array;
+    public var blobs:Array = [];
     public var traps:Array;
     public var customTiles:Array;
     public var customWalls:Array
     public static var pathfinder:Pathfinder;
     public var locked:Boolean;
-    public var entrance:int;
-    public var exit:int;
+    public var entrance:Point;
+    public var exit:Point;
     public var heaps:*;
-    public var mobs:Array;
+    public var mobs:Array = [];
+    public var pt:Pathfinder;
 
     public function Level() {
     }
@@ -49,6 +56,36 @@ public class Level {
         height = h;
         length = width * height;
         pathfinder = new Pathfinder();
+    }
+
+    public static function makeNewLevel():Level {
+        var level:Level = new Level();
+        level.setSize(6, 6);
+        level.map = [[0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 1, 0, 0, 0, 0, 0, 0]];
+        level.pt = new Pathfinder();
+        level.pt.loadMap(level.map, 6, 6);
+        //
+        level.mobs = [];
+        makeMob(new Point(5, 5));
+        makeMob(new Point(4, 5));
+
+        function makeMob(brokenPos:Point):void {
+            var mob:Mob = new Mob();
+            mob.spawn(Dungeon.depth);
+            mob.pos = Level.pointToCell(brokenPos);
+            level.mobs.push(mob);
+        }
+
+        return level;
     }
 
     public function reset():void {
@@ -67,7 +104,7 @@ public class Level {
 
     }
 
-    public function seal() :void{
+    public function seal():void {
         if (!locked) {
             locked = true;
         }
@@ -84,7 +121,7 @@ public class Level {
     }
 
     //todo
-    public function findMod(pos:int):Mob {
+    public function findMod(pos:Point):Mob {
         return null
     }
 
@@ -92,11 +129,15 @@ public class Level {
         return null;
     }
 
-    public function randomRespawnCell():Actor {
-        return null
+    /**
+     * 随机一个上面没有怪物 没有英雄 没有植物的格子
+     * @return
+     */
+    public function randomRespawnCell():int {
+        return 0;
     }
 
-    public function randomDestination():Actor {
+    public function randomDestination():int {
         return null
     }
 
@@ -148,8 +189,8 @@ public class Level {
 
     }
 
-    public function fallCell(fallintoPit:Boolean):int {
-        return 1;
+    public function fallCell(fallintoPit:Boolean):Point {
+        return new Point();
     }
 
     /**
@@ -201,5 +242,16 @@ public class Level {
         return "";
     }
 
+    private static function pointToCell(brokenPos:Point):Point {
+        return brokenPos;
+    }
+
+    public function findBlob(cell:Point):Blob {
+        return null
+    }
+
+    public function findItem(cell:Point):Item {
+        return null
+    }
 }
 }
