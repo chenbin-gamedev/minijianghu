@@ -1,5 +1,9 @@
 package com.rover022.game.scenes {
+import starling.display.Sprite;
+
 public class PixelScene extends Scene {
+    public var view:Sprite;
+
     public function PixelScene() {
         super();
     }

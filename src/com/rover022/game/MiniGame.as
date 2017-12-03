@@ -30,6 +30,7 @@ public class MiniGame extends PixelScene {
     public var onChange:Function;
     public static var assets:AssetManager;
 
+
     public function MiniGame() {
         instance = this;
     }

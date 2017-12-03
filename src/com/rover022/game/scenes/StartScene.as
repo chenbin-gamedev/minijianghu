@@ -23,10 +23,8 @@ public class StartScene extends PixelScene {
     public function startNewGame():void {
         Dungeon.hero = null;
         InterlevelScene.mode = InterlevelScene.DESCEND;
-//        MiniGame.switchScene(InterlevelScene);
         MiniGame.switchScene(GameScene);
     }
-
 
     public function updateClass():void {
 

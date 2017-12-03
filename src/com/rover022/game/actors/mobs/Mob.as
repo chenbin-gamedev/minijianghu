@@ -22,7 +22,7 @@ public class Mob extends Char {
     public var EXP:int = 1;
     public var maxLv1:int = Hero.MAX_LEVEL;
     //
-    public var enemy:Char;
+
     public var enemySeen:Boolean;
     public var alerted:Boolean = false;
     private var level:int;
@@ -46,7 +46,7 @@ public class Mob extends Char {
         super.storeInBundle();
     }
 
-    public function act():Boolean {
+    override public function act():Boolean {
         return false;
     }
 
@@ -92,10 +92,25 @@ public class Mob extends Char {
 
     }
 
+    /**
+     * 观察地下城 自身的血量 魔法和攻击力 防御力做出改变
+     * @param level
+     */
     public function spawn(level:int):void {
         this.level = level;
         HT = (2 + level) * 4;
-        defenseSkill = 9 + level;
+        //defenseSkill = 9 + level;
+    }
+
+    override public function die():void {
+        var _index:int = Dungeon.level.mobs.indexOf(this);
+        if (_index != -1) {
+            Dungeon.level.mobs.removeAt(_index);
+            removeFromParent(true);
+        } else {
+            trace("奇怪 怪物群没找到这个", this);
+        }
+        //super.die();
     }
 }
 }

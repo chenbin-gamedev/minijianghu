@@ -1,6 +1,5 @@
 package com.rover022.game.scenes {
 import com.rover022.game.Dungeon;
-import com.rover022.game.TouchArea;
 import com.rover022.game.actors.Actor;
 import com.rover022.game.actors.blobs.Blob;
 import com.rover022.game.actors.hero.Hero;
@@ -29,7 +28,6 @@ import com.rover022.game.windows.WndMessage;
 import flash.geom.Point;
 
 import starling.display.Sprite;
-import starling.events.Event;
 
 /**
  * 游戏主场景
@@ -98,7 +96,8 @@ public class GameScene extends PixelScene {
         super.create();
         trace("GameScene is create");
         cellSelector = new CellSelector();
-        cellSelector.y = 50;
+        cellSelector.x = 6;
+        cellSelector.y = 62 + 77;
         addChild(cellSelector);
         terrain = makeSprite();
         customTiles = makeSprite();
@@ -169,9 +168,6 @@ public class GameScene extends PixelScene {
         selectCall(defaultCellListener);
     }
 
-//    private function onTouchAreaClick(event:Event):void {
-//        cellSelector(event);
-//    }
 
     private function makeSprite():Sprite {
         var _s:Sprite = new Sprite();

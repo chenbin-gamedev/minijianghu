@@ -27,6 +27,8 @@ public class Dungeon {
     //
     public static var version:String = "1.0.1";
     public static var seed:Number;
+    //
+    public static var DefaultHero:Class = Hero;
 
     public function Dungeon() {
     }
@@ -53,7 +55,7 @@ public class Dungeon {
         //
         Generator.reset();
         Generator.initArtifacts();
-        hero = new Hero();
+        hero = new DefaultHero();
         hero.live();
         //
         Badges.reset();
@@ -76,6 +78,9 @@ public class Dungeon {
             case 4:
             case 5:
                 level = new SewerLevel();
+                break;
+            default:
+                level = new Level();
                 break;
         }
         level.create();

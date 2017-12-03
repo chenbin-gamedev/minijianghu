@@ -9,7 +9,8 @@ public class DungeonTilemap extends Tilemap {
     }
 
     public function screenToTile(x:Number, y:Number, b:Boolean):Point {
-        return new Point();
+        return new Point(int(x / SIZE), int(y / SIZE));
+//        return new Point();
     }
 
     public static function setupVariance(length:uint, seedCurDepth:*):void {

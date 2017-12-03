@@ -1,4 +1,5 @@
 package com.rover022.game.actors.mobs.npcs {
+
 import com.rover022.game.actors.mobs.Mob;
 
 import flash.geom.Point;
@@ -12,6 +13,8 @@ public class NPC extends Mob {
         state = PASSIVE;
     }
 
+
+
     public function throwItem():void {
 
     }
@@ -21,6 +24,7 @@ public class NPC extends Mob {
     }
 
     public function interact():Boolean {
+
         return true;
     }
 }

@@ -5,6 +5,7 @@ import com.rover022.game.actors.Char;
 import com.rover022.game.actors.blobs.Blob;
 import com.rover022.game.actors.mobs.King;
 import com.rover022.game.actors.mobs.Mob;
+import com.rover022.game.actors.mobs.npcs.NPC;
 import com.rover022.game.items.Item;
 import com.rover022.game.levels.traps.Trap;
 import com.rover022.game.plants.Plant;
@@ -13,6 +14,8 @@ import com.rover022.game.utils.Pathfinder;
 import flash.geom.Point;
 
 import starling.display.Sprite;
+
+import utils.PointUtil;
 
 public class Level {
     public var width:int;
@@ -30,7 +33,7 @@ public class Level {
     public var water:Array;
     public var pit:Array;
     //
-    public var mods:Array;
+
     public var plants:Array;
     public var blobs:Array = [];
     public var traps:Array;
@@ -58,6 +61,10 @@ public class Level {
         pathfinder = new Pathfinder();
     }
 
+    /**
+     * 测试用的数据
+     * @return
+     */
     public static function makeNewLevel():Level {
         var level:Level = new Level();
         level.setSize(6, 6);
@@ -77,6 +84,14 @@ public class Level {
         level.mobs = [];
         makeMob(new Point(5, 5));
         makeMob(new Point(4, 5));
+
+        //加入一个NPC
+        var npc:NPC = new NPC();
+        npc.pos = Level.pointToCell(new Point(3, 5));
+        level.mobs.push(npc);
+        //
+
+
 
         function makeMob(brokenPos:Point):void {
             var mob:Mob = new Mob();
@@ -122,6 +137,12 @@ public class Level {
 
     //todo
     public function findMod(pos:Point):Mob {
+        for each (var mob:Mob in mobs) {
+            if (PointUtil.equit(mob.pos, pos)) {
+                return mob;
+            }
+        }
+
         return null
     }
 
@@ -247,10 +268,14 @@ public class Level {
     }
 
     public function findBlob(cell:Point):Blob {
+
         return null
     }
 
     public function findItem(cell:Point):Item {
+//        for each (var item:Item in Dungeon.droppedItems) {
+//            if(item.pos)
+//        }
         return null
     }
 }
