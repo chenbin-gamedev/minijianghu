@@ -11,6 +11,7 @@ import com.rover022.game.plants.Plant;
 import com.rover022.game.utils.Pathfinder;
 
 import flash.geom.Point;
+import flash.utils.getDefinitionByName;
 
 import starling.display.Sprite;
 
@@ -82,7 +83,8 @@ public class Level {
 //        makeMob(new Point(4, 5));
 
         //加入一个NPC
-        var npc:NPC = new NPC();
+        var npcClass:Class = getDefinitionByName("com.rover022.minigame.actors.npcs.OldMan") as Class;
+        var npc:NPC = new npcClass();
         npc.pos = Level.pointToCell(new Point(3, 5));
         level.mobs.push(npc);
 

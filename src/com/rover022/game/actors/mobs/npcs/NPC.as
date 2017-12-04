@@ -30,5 +30,13 @@ public class NPC extends Mob {
 
         return true;
     }
+
+    public function getNextTalk():String {
+        return "";
+    }
+
+    public function getName():String {
+        return "null"
+    }
 }
 }

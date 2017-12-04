@@ -124,6 +124,7 @@ public class Hero extends Char {
             if (ch is NPC) {
                 curAction = new HeroAction(HeroAction.Interact, cell);
                 curAction.target = ch;
+                return act();
             } else {
                 if (canAttack(ch)) {
                     curAction = new HeroAction(HeroAction.Attack, cell);
@@ -270,7 +271,7 @@ public class Hero extends Char {
      * npc交谈
      * @param action
      * @return
-     */
+     */ 
     private function actInteract(action:HeroAction):Boolean {
         var npc:NPC = action.target as NPC;
         npc.interact();
