@@ -2,6 +2,7 @@ package com.rover022.game.actors {
 import com.rover022.game.Dungeon;
 import com.rover022.game.MiniGame;
 import com.rover022.game.actors.buffs.Buff;
+import com.rover022.game.items.weapon.missiles.MissileWeapon;
 import com.rover022.game.tiles.DungeonTilemap;
 import com.rover022.game.utils.DebugTool;
 
@@ -13,6 +14,7 @@ import starling.core.Starling;
 public class Char extends Actor {
     public var enemy:Char;
     public var pos:Point = new Point();
+    public var ready:Boolean = true;
 //    public var sprite:CharSprite;
 //    public var name:String = "mod";
 
@@ -41,7 +43,7 @@ public class Char extends Actor {
     public static var NEUTRAL:String = "NEUTRAL";
     //盟友
     public static var ALLY:String = "ALLY";
-
+    //角色阵营
     public var alignment:String = NEUTRAL;
 
     public var buffs:Array = [];
@@ -66,7 +68,20 @@ public class Char extends Actor {
 
             return false;
         } else {
-            hit(this, enemy, false);
+            var acuRoll:int = attackSkill;
+            var defRoll:int = enemy.defenseSkill;
+            var dmg:int = acuRoll - defRoll;
+            dmg = attackProc(enemy, dmg)
+            if (dmg < 0) {
+                dmg = 0;
+            }
+            enemy.HP -= dmg;
+            if (enemy.HP <= 0) {
+                enemy.die();
+            }
+            trace("伤害值:", dmg, "剩余HP", enemy.HP);
+            return enemy.HP <= 0;
+            //hit(this, enemy, false);
         }
 //        boolean visibleFight = Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[enemy.pos];
 //
@@ -172,7 +187,7 @@ public class Char extends Actor {
     }
 
     public function attackProc(enemy:Char, damage:int):int {
-        return 0;
+        return damage;
     }
 
     public function defenseProc(enemy:Char, damage:int):int {
@@ -198,7 +213,7 @@ public class Char extends Actor {
     }
 
     override public function onRemove():void {
-        super.onRemove()
+        super.onRemove();
         for each (var buff:Buff in buffs) {
             buff.deach();
         }
@@ -223,14 +238,70 @@ public class Char extends Actor {
     }
 
     public function move(sept:Point):void {
+        Dungeon.level.map[this.pos.x][this.pos.y] = 0;
         pos = sept;
+        Dungeon.level.map[this.pos.x][this.pos.y] = 1;
+        //
         var f_x:int = DungeonTilemap.SIZE * pos.x;
         var f_y:int = DungeonTilemap.SIZE * pos.y;
         var tween:Tween = new Tween(this, baseSpeed);
         tween.moveTo(f_x, f_y);
         tween.onComplete = onCompleteTweener;
         Starling.juggler.add(tween);
+        //清理地图数据
 
+    }
+
+    public function shoot(enemy:Char, wep:MissileWeapon):Boolean {
+        return true
+    }
+
+    public function updateHT(boostHP:Boolean):void {
+
+    }
+
+    /**
+     * 判断能否被攻击
+     * 1 活的
+     * 2 没有被诱惑的
+     * 3 在攻击范围之类的
+     * @param enemy
+     * @return
+     */
+    public function canAttack(enemy:Char):Boolean {
+        if (enemy.isAlive() && !isCharmedBy(enemy) && getCloser(enemy.pos)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 判断这一点是否在攻击范围内
+     * 先写一个基本的 上下左右
+     * @param target
+     * @return
+     */
+    public function getCloser(target:Point):Boolean {
+        if (target.x == pos.x) {
+            if (Math.abs(target.y - pos.y) == 1) {
+                return true;
+            }
+        }
+        if (target.y == pos.y) {
+            if (Math.abs(target.x - pos.x) == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 是否是被魔法迷了
+     * @param enemy
+     * @return
+     */
+    public function isCharmedBy(enemy:Char):Boolean {
+        return false;
     }
 
     public function onCompleteTweener():void {
@@ -264,5 +335,10 @@ public class Char extends Actor {
     public function die():void {
 
     }
+
+    public function showStatus(POSITIVE:String, effValue:Number):void {
+
+    }
+
 }
 }

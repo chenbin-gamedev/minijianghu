@@ -1,8 +1,8 @@
 package com.rover022.game.actors.hero {
 import com.rover022.game.items.armor.Armor;
 import com.rover022.game.items.bags.Bag;
-import com.rover022.game.items.weapon.KindOfWeapon;
-import com.rover022.game.items.weapon.KindofMisc;
+import com.rover022.game.items.KindOfWeapon;
+import com.rover022.game.items.KindofMisc;
 
 public class Belongings {
     public var backpack:Bag = new Bag();

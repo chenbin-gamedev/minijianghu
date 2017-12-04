@@ -3,7 +3,6 @@ import com.rover022.game.Dungeon;
 import com.rover022.game.actors.Actor;
 import com.rover022.game.actors.Char;
 import com.rover022.game.actors.blobs.Blob;
-import com.rover022.game.actors.mobs.King;
 import com.rover022.game.actors.mobs.Mob;
 import com.rover022.game.actors.mobs.npcs.NPC;
 import com.rover022.game.items.Item;
@@ -33,19 +32,19 @@ public class Level {
     public var water:Array;
     public var pit:Array;
     //
-
     public var plants:Array;
     public var blobs:Array = [];
     public var traps:Array;
     public var customTiles:Array;
     public var customWalls:Array
-    public static var pathfinder:Pathfinder;
+
     public var locked:Boolean;
     public var entrance:Point;
     public var exit:Point;
     public var heaps:*;
     public var mobs:Array = [];
-    public var pt:Pathfinder;
+
+    public static var pathfinder:Pathfinder;
 
     public function Level() {
     }
@@ -68,31 +67,26 @@ public class Level {
     public static function makeNewLevel():Level {
         var level:Level = new Level();
         level.setSize(6, 6);
-        level.map = [[0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
-            [0, 0, 1, 1, 0, 0, 0, 0, 0, 0]];
-        level.pt = new Pathfinder();
-        level.pt.loadMap(level.map, 6, 6);
+        level.map = [
+            [0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0]];
+        pathfinder = new Pathfinder();
+        pathfinder.loadMap(level.map, 6, 6);
         //
         level.mobs = [];
         makeMob(new Point(5, 5));
-        makeMob(new Point(4, 5));
+//        makeMob(new Point(4, 5));
 
         //加入一个NPC
         var npc:NPC = new NPC();
         npc.pos = Level.pointToCell(new Point(3, 5));
         level.mobs.push(npc);
+
         //
-
-
-
         function makeMob(brokenPos:Point):void {
             var mob:Mob = new Mob();
             mob.spawn(Dungeon.depth);
@@ -273,10 +267,45 @@ public class Level {
     }
 
     public function findItem(cell:Point):Item {
-//        for each (var item:Item in Dungeon.droppedItems) {
-//            if(item.pos)
-//        }
-        return null
+        for each (var item:Item in Dungeon.droppedItems) {
+            if (PointUtil.equit(cell, item.pos)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 能否通过这一点
+     * 判断条件
+     * 1 不能是入口
+     * 2 不能是出口
+     * 3 不能有道具
+     * 4 不能有敌人
+     * 5 不能有障碍物
+     * @param Point
+     * @return
+     */
+    public function canPassable(_pos:Point):Boolean {
+        if (PointUtil.equit(exit, _pos)) {
+            return false;
+        }
+        if (PointUtil.equit(entrance, _pos)) {
+            return false;
+        }
+        var item:Item = findItem(_pos);
+        if (item) {
+            return false;
+        }
+        var mob:Mob = findMod(_pos);
+        if (mob) {
+            return false;
+        }
+        var blob:Blob = findBlob(_pos);
+        if (blob) {
+            return false;
+        }
+        return true
     }
 }
 }

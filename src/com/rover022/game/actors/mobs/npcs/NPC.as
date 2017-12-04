@@ -13,8 +13,6 @@ public class NPC extends Mob {
         state = PASSIVE;
     }
 
-
-
     public function throwItem():void {
 
     }
@@ -23,6 +21,11 @@ public class NPC extends Mob {
 
     }
 
+    /**
+     * npc 活动
+     * 基本活动类型就是对话
+     * @return
+     */
     public function interact():Boolean {
 
         return true;

@@ -3,6 +3,8 @@ import com.rover022.game.actors.hero.Hero;
 import com.rover022.game.items.bags.Bag;
 import com.rover022.game.scenes.GameScene;
 
+import flash.geom.Point;
+
 public class Item {
     public var curUSer:Hero;
     public var curItem:Item;
@@ -30,9 +32,14 @@ public class Item {
     //独一无二
     public var unique:Boolean = false;
     public var bones:Boolean = false;
-
+    //出现的坐标点
+    public var pos:Point;
 
     public function Item() {
+    }
+
+    public function getLevel():Number {
+        return level;
     }
 
     public function actions():Array {
@@ -52,6 +59,38 @@ public class Item {
 
     }
 
+    public function visiblyUpgradoble():int {
+        return levelKnown ? level : 0;
+    }
+
+    public function visiblyCursed():Boolean {
+        return cursed && cursedKnown;
+    }
+
+    /**
+     * 是否可以成长型装备
+     */
+    public function isUpgradoble():Boolean {
+        return true;
+    }
+
+    /**
+     * 是否被鉴定的
+     * @return
+     */
+    public function isIdentified():Boolean {
+        return levelKnown && cursedKnown;
+    }
+
+    /**
+     * 是否被装备的
+     * @param hero
+     * @return
+     */
+    public function isEquipped(hero:Hero):Boolean {
+        return false;
+    }
+
     public function reset():void {
 
     }
@@ -59,7 +98,6 @@ public class Item {
     public function doThrow(hero:Hero):void {
 //        GameScene.selectCall(thrower);
     }
-
 
     public function execute(hero:Hero, action:String):void {
         curUSer = hero;
@@ -100,7 +138,7 @@ public class Item {
     }
 
     /**
-     * 刷新
+     * 刷新快捷插槽
      */
     public function updateQuickslot():void {
 

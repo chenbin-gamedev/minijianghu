@@ -1,13 +1,18 @@
 package com.rover022.game.actors {
+import com.rover022.game.Dungeon;
 import com.rover022.game.actors.buffs.Buff;
 import com.rover022.game.actors.mobs.Mob;
 
 import flash.geom.Point;
 
+import starling.animation.DelayedCall;
+import starling.core.Starling;
 import starling.display.Sprite;
 
 public class Actor extends Sprite {
     public static var TICK:Number = 1;
+    //回合数
+    public static var now:int = 0;
     public var time:Number;
     public var id:int = 0;
     public static var SIZE:int = 58;
@@ -18,6 +23,33 @@ public class Actor extends Sprite {
 
     public function act():Boolean {
         return false;
+    }
+
+    /**
+     * 地下城行动进度
+     * 1 如果地下城没有敌对玩家那么可以再次行动
+     * 2 如果地下城有敌人让敌人行动,0.5秒后玩家才可以行动
+     */
+    public static function process():void {
+        var doNext:Boolean = true;
+        for each (var mob:Mob in Dungeon.level.mobs) {
+            mob.act();
+            if (mob.alignment == Char.ENEMY) {
+                doNext = false
+            }
+        }
+        //
+        if (doNext) {
+            onMobProcessComplete();
+        } else {
+            var delayCall:DelayedCall = new DelayedCall(onMobProcessComplete, 0.5);
+            Starling.juggler.add(delayCall);
+        }
+
+        function onMobProcessComplete():void {
+            now++;
+            Dungeon.hero.ready = true;
+        }
     }
 
     public function place(pos:Point):void {

@@ -1,4 +1,4 @@
-package com.rover022.game.items.weapon {
+package com.rover022.game.items {
 import com.rover022.game.items.EquipableItem;
 
 public class KindofMisc extends EquipableItem {

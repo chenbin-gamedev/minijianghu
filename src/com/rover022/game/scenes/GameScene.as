@@ -168,7 +168,6 @@ public class GameScene extends PixelScene {
         selectCall(defaultCellListener);
     }
 
-
     private function makeSprite():Sprite {
         var _s:Sprite = new Sprite();
         cellSelector.addChild(_s);
@@ -456,6 +455,7 @@ public class GameScene extends PixelScene {
     public function addMobSprite(mob:Mob):void {
         mobs.addChild(mob);
         mob.reset();
+        Dungeon.level.map[mob.pos.x][mob.pos.y] = 1;
     }
 }
 }

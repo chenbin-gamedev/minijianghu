@@ -1,4 +1,5 @@
 package com.rover022.game.items {
+import com.rover022.game.Dungeon;
 import com.rover022.game.actors.Char;
 import com.rover022.game.actors.hero.Hero;
 
@@ -13,7 +14,6 @@ public class EquipableItem extends Item {
     public function EquipableItem() {
         super();
     }
-
 
     override public function actions():Array {
         return [AC_UNEQUIP, AC_EQUIP];
@@ -31,19 +31,17 @@ public class EquipableItem extends Item {
         return true;
     }
 
+    public function doUnequip(hero:Hero, b1:Boolean, b2:Boolean):Boolean {
+        Dungeon.quickslot.clearItem(this);
+        updateQuickslot();
+        return true;
+    }
+
     override public function cast(hero:Hero, dst:int):void {
         super.cast(hero, dst);
     }
 
-    /**
-     * 解除
-     * @param hero
-     * @param collect
-     * @return
-     */
-    public function doUnequip(hero:Hero, collect:Boolean):Boolean {
-        return doUnequip(hero, collect);
-    }
+
 
     public function active(ch:Char):void {
 

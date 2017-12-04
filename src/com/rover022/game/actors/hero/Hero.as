@@ -1,16 +1,21 @@
 package com.rover022.game.actors.hero {
 import com.rover022.game.Dungeon;
-import com.rover022.game.MiniGame;
 import com.rover022.game.MovieClipSample;
+import com.rover022.game.actors.Actor;
 import com.rover022.game.actors.Char;
 import com.rover022.game.actors.blobs.Blob;
 import com.rover022.game.actors.mobs.npcs.NPC;
 import com.rover022.game.items.Item;
+import com.rover022.game.items.KindOfWeapon;
 import com.rover022.game.items.weapon.missiles.MissileWeapon;
 import com.rover022.game.messages.Messages;
 import com.rover022.game.sprites.CharSprite;
 
 import flash.geom.Point;
+
+import starling.animation.DelayedCall;
+import starling.animation.Tween;
+import starling.core.Starling;
 
 public class Hero extends Char {
     public static const MAX_LEVEL:int = 99;
@@ -21,7 +26,6 @@ public class Hero extends Char {
     public static const EXPERIENCE:String = "exp";
     public static const HTBOOST:String = "htboost";
 
-    public var ready:Boolean = true;
     public var curAction:HeroAction;
     public var lastAction:HeroAction;
 
@@ -35,6 +39,7 @@ public class Hero extends Char {
     public var belongings:Belongings;
     public var resting:Boolean;
     public var heroClass:HeroClass;
+    private var rangeWeapon:MissileWeapon;
 
     public function Hero() {
         super();
@@ -76,18 +81,6 @@ public class Hero extends Char {
 
     public function get maxExp():int {
         return 5 + lvl * 5;
-    }
-
-    public function updateHT(boostHP:Boolean):void {
-
-    }
-
-    public function shoot(enemy:Char, wep:MissileWeapon):Boolean {
-        return true
-    }
-
-    public function canAttack(enemy:Char):Boolean {
-        return true;
     }
 
     public function spendAndNext(time:Number):void {
@@ -171,78 +164,84 @@ public class Hero extends Char {
             return false;
 
         } else {
+            //执行行动逻辑...行动完成之后跑Actor.process()
+            Starling.juggler.delayCall(Actor.process, baseSpeed);
             resting = false;
             ready = false;
-
             if (curAction.type == HeroAction.Move) {
                 return actMove(curAction);
             } else if (curAction.type == HeroAction.Interact) {
                 return actInteract(curAction);
             } else if (curAction.type == HeroAction.Buy) {
                 return actBuy(curAction);
-
             } else if (curAction.type == HeroAction.PickUp) {
-
                 return actPickUp(curAction);
-
             } else if (curAction.type == HeroAction.OpenChest) {
-
                 return actOpenChest(curAction);
-
             } else if (curAction.type == HeroAction.Unlock) {
-
                 return actUnlock(curAction);
-
             } else if (curAction.type == HeroAction.Descend) {
-
                 return actDescend(curAction);
-
             } else if (curAction.type == HeroAction.Ascend) {
-
                 return actAscend(curAction);
-
             } else if (curAction.type == HeroAction.Attack) {
-
                 return actAttack(curAction);
-
             } else if (curAction.type == HeroAction.Alchemy) {
-
                 return actAlchemy(curAction);
-
             }
             return false;
         }
+    }
+
+    override public function attackProc(enemy:Char, damage:int):int {
+        var wep:KindOfWeapon = rangeWeapon != null ? rangeWeapon : belongings.weapon;
+        if (wep != null) {
+            damage = wep.proc(this, enemy, damage);
+        }
+        return damage;
+    }
+
+    public function actAttack(action:HeroAction):Boolean {
+        enemy = action.target;
+        if (enemy.isAlive() && canAttack(enemy) && !isCharmedBy(enemy)) {
+            //Invisibility.dispel();
+            //spend(attackDelay());
+            //sprite.attack(enemy.pos);
+
+//            HeroClass.ROGUE
+            //执行动画程序
+            var tween:Tween;
+            if (heroClass.type == HeroClass.WARRIOR) {
+                tween = new Tween(this, baseSpeed);
+                tween.moveTo(enemy.x, enemy.y);
+                tween.reverse = true;
+                tween.repeatCount = 2;
+                Starling.juggler.add(tween);
+            } else {
+                shoot(enemy, null);
+            }
+            //完毕以后执行攻击动作
+            var delayCall:DelayedCall = new DelayedCall(attack, baseSpeed, [enemy]);
+            Starling.juggler.add(delayCall);
+//            attack(enemy);
+//            ready = true;
+            return true;
+        } else {
+            trace("enemy isAlive ", enemy.isAlive());
+            trace("canAttack ", canAttack(enemy));
+            trace("isCharmedBy()", !isCharmedBy(enemy));
+            trace("不能执行攻击动作");
+            return false;
+        }
+//        return true;
     }
 
     private function actAlchemy(curAction:HeroAction):Boolean {
         return true;
     }
 
-    private function actAttack(action:HeroAction):Boolean {
-        enemy = action.target;
-        if (enemy.isAlive() && canAttack(enemy) && !isCharmedBy(enemy)) {
-            //Invisibility.dispel();
-            //spend(attackDelay());
-            //sprite.attack(enemy.pos);
-            attack(enemy);
-            ready = true;
-            return false;
-        } else {
-            trace("enemy isAlive ", enemy.isAlive());
-            trace("canAttack ", canAttack(enemy));
-            trace("isCharmedBy()", !isCharmedBy(enemy));
-            trace("不能执行攻击动作");
-        }
-        return true;
-    }
-
-    private function isCharmedBy(enemy:Char):Boolean {
-        return false;
-    }
-
     private function actAscend(curAction:HeroAction):Boolean {
         return true;
-
     }
 
     private function actDescend(curAction:HeroAction):Boolean {
@@ -267,6 +266,11 @@ public class Hero extends Char {
 
     }
 
+    /**
+     * npc交谈
+     * @param action
+     * @return
+     */
     private function actInteract(action:HeroAction):Boolean {
         var npc:NPC = action.target as NPC;
         npc.interact();
@@ -285,120 +289,6 @@ public class Hero extends Char {
         trace("移动");
         move(action.pos);
         return true;
-//        if (getCloser(action.pos)) {
-//            return true;
-//        } else {
-////            ready();
-//            return false;
-//        }
-//        return true;
-    }
-
-    private function getCloser(target:Point):Boolean {
-
-        if (target == pos) {
-            move(pos);
-            return true;
-        }
-        return false;
-
-//        if (rooted) {
-//            Camera.main.shake( 1, 1f );
-//            return false;
-//        }
-//
-//        int step = -1;
-//
-//        if (Dungeon.level.adjacent( pos, target )) {
-//
-//            path = null;
-//
-//            if (Actor.findChar( target ) == null) {
-//                if (Dungeon.level.pit[target] && !flying && !Dungeon.level.solid[target]) {
-//                    if (!Chasm.jumpConfirmed){
-//                        Chasm.heroJump(this);
-//                        interrupt();
-//                    } else {
-//                        Chasm.heroFall(target);
-//                    }
-//                    return false;
-//                }
-//                if (Dungeon.level.passable[target] || Dungeon.level.avoid[target]) {
-//                    step = target;
-//                }
-//            }
-//
-//        } else {
-//
-//            boolean newPath = false;
-//            if (path == null || path.isEmpty() || !Dungeon.level.adjacent(pos, path.getFirst()))
-//                newPath = true;
-//            else if (path.getLast() != target)
-//                newPath = true;
-//            else {
-//                //looks ahead for path validity, up to length-1 or 2.
-//                //Note that this is shorter than for mobs, so that mobs usually yield to the hero
-//                int lookAhead = (int) GameMath.gate(0, path.size()-1, 2);
-//                for (int i = 0; i < lookAhead; i++){
-//                    int cell = path.get(i);
-//                    if (!Dungeon.level.passable[cell] || (fieldOfView[cell] && Actor.findChar(cell) != null)) {
-//                        newPath = true;
-//                        break;
-//                    }
-//                }
-//            }
-//
-//            if (newPath) {
-//
-//                int len = Dungeon.level.length();
-//                boolean[] p = Dungeon.level.passable;
-//                boolean[] v = Dungeon.level.visited;
-//                boolean[] m = Dungeon.level.mapped;
-//                boolean[] passable = new boolean[len];
-//                for (int i = 0; i < len; i++) {
-//                    passable[i] = p[i] && (v[i] || m[i]);
-//                }
-//
-//                path = Dungeon.findPath(this, pos, target, passable, fieldOfView);
-//            }
-//
-//            if (path == null) return false;
-//            step = path.removeFirst();
-//
-//        }
-//
-//        if (step != -1) {
-//
-//            int moveTime = 1;
-//            if (belongings.armor != null && belongings.armor.hasGlyph(Stone.class) &&
-//                    (Dungeon.level.map[pos] == Terrain.DOOR
-//                            || Dungeon.level.map[pos] == Terrain.OPEN_DOOR
-//                            || Dungeon.level.map[step] == Terrain.DOOR
-//                            || Dungeon.level.map[step] == Terrain.OPEN_DOOR )){
-//                moveTime *= 2;
-//            }
-//            sprite.move(pos, step);
-//            move(step);
-//
-//            spend( moveTime / speed() );
-//
-//            search(false);
-//
-//            if (subClass == HeroSubClass.FREERUNNER){
-//                Buff.affect(this, Momentum.class).gainStack();
-//            }
-//
-//            //FIXME this is a fairly sloppy fix for a crash involving pitfall traps.
-//            //really there should be a way for traps to specify whether action should continue or
-//            //not when they are pressed.
-//            return InterlevelScene.mode != InterlevelScene.Mode.FALL;
-//
-//        } else {
-//
-//            return false;
-//
-//        }
-
     }
 
 }

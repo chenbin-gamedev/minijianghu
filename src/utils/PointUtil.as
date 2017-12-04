@@ -6,6 +6,9 @@ public class PointUtil {
     }
 
     public static function equit(p1:Point, p2:Point):Boolean {
+        if (p1 == null || p2 == null) {
+            return false;
+        }
         if (p1.x == p2.x && p1.y == p2.y) {
             return true;
         }
