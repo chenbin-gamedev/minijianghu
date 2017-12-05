@@ -7,6 +7,7 @@ import com.rover022.game.actors.blobs.Blob;
 import com.rover022.game.actors.mobs.npcs.NPC;
 import com.rover022.game.items.Item;
 import com.rover022.game.items.KindOfWeapon;
+import com.rover022.game.items.potions.Potion;
 import com.rover022.game.items.weapon.missiles.MissileWeapon;
 import com.rover022.game.messages.Messages;
 import com.rover022.game.sprites.CharSprite;
@@ -136,6 +137,7 @@ public class Hero extends Char {
         item = Dungeon.level.findItem(cell);
         if (item) {
             curAction = new HeroAction(HeroAction.PickUp, cell);
+            curAction.item = item;
             return act();
         }
         //移动逻辑
@@ -237,32 +239,45 @@ public class Hero extends Char {
 //        return true;
     }
 
-    private function actAlchemy(curAction:HeroAction):Boolean {
+    private function actAlchemy(action:HeroAction):Boolean {
         return true;
     }
 
-    private function actAscend(curAction:HeroAction):Boolean {
+    private function actAscend(action:HeroAction):Boolean {
         return true;
     }
 
-    private function actDescend(curAction:HeroAction):Boolean {
+    private function actDescend(action:HeroAction):Boolean {
         return true;
 
     }
 
-    private function actUnlock(curAction:HeroAction):Boolean {
+    private function actUnlock(action:HeroAction):Boolean {
         return true;
     }
 
-    private function actOpenChest(curAction:HeroAction):Boolean {
+    private function actOpenChest(action:HeroAction):Boolean {
         return true;
     }
 
-    private function actPickUp(curAction:HeroAction):Boolean {
+    /**
+     * 拾取道具
+     * @param action
+     * @return
+     */
+    private function actPickUp(action:HeroAction):Boolean {
+        var dst:Point = action.pos;
+        var item:Item = Dungeon.level.findItem(dst);
+        if (item != null) {
+            if (item.doPickUp(this)) {
+
+                trace("拾取成功");
+            }
+        }
         return true;
     }
 
-    private function actBuy(curAction:HeroAction):Boolean {
+    private function actBuy(action:HeroAction):Boolean {
         return true;
 
     }
@@ -271,7 +286,7 @@ public class Hero extends Char {
      * npc交谈
      * @param action
      * @return
-     */ 
+     */
     private function actInteract(action:HeroAction):Boolean {
         var npc:NPC = action.target as NPC;
         npc.interact();
@@ -292,5 +307,12 @@ public class Hero extends Char {
         return true;
     }
 
+    /**
+     * 幸运度
+     * @return
+     */
+    public function getLuck():Number {
+        return _luck;
+    }
 }
 }

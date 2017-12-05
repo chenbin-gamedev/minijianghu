@@ -1,5 +1,7 @@
 package com.rover022.game.items {
-public class Heap {
+import starling.display.Sprite;
+
+public class Heap extends Sprite {
     public function Heap() {
     }
 }

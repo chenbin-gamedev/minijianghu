@@ -150,7 +150,7 @@ public class GameScene extends PixelScene {
         trace("道具数量:", Dungeon.droppedItems.length);
         var dropped:Array = Dungeon.droppedItems;
         for each (var item:Item in dropped) {
-            var pos:int = Dungeon.level.randomRespawnCell();
+            var pos:Point = Dungeon.level.randomRespawnCell();
             if (item is Potion) {
 
             } else if (item is Plant) {
@@ -208,6 +208,9 @@ public class GameScene extends PixelScene {
     public static function addMob(mob:Mob):void {
         Dungeon.level.mobs.push(mob);
         Actor.add(mob);
+        trace(Dungeon.level.map);
+
+        Dungeon.level.map[mob.pos.x][mob.pos.y] = 1;
         scene.addMobSprite(mob);
     }
 
@@ -239,7 +242,9 @@ public class GameScene extends PixelScene {
      * @param pos
      */
     public static function pickUp(item:Item, pos:Point):void {
-
+        if (scene != null) {
+            scene.toolbar.pickup(item, pos);
+        }
     }
 
     /**
@@ -455,7 +460,12 @@ public class GameScene extends PixelScene {
     public function addMobSprite(mob:Mob):void {
         mobs.addChild(mob);
         mob.reset();
-        Dungeon.level.map[mob.pos.x][mob.pos.y] = 1;
+
+    }
+
+    public function addItemSprite(item:Item):void {
+        gases.addChild(item);
+        item.reset();
     }
 }
 }

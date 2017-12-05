@@ -13,7 +13,11 @@ import com.rover022.game.levels.rooms.secret.SecretRoom;
 import com.rover022.game.levels.rooms.special.SpecialRoom;
 import com.rover022.game.utils.Bundle;
 
+import flash.filesystem.File;
+import flash.filesystem.FileMode;
+import flash.filesystem.FileStream;
 import flash.geom.Point;
+import flash.utils.ByteArray;
 
 public class Dungeon {
     public static var isdebug:Boolean = true;
@@ -29,6 +33,31 @@ public class Dungeon {
     public static var seed:Number;
     //
     public static var DefaultHero:Class = Hero;
+
+    private static const RG_GAME_FILE:String = "game.dat";
+    private static const RG_DEPTH_FILE:String = "depth%d.dat";
+
+    private static const WR_GAME_FILE:String = "warrior.dat";
+    private static const WR_DEPTH_FILE:String = "warrior%d.dat";
+
+    private static const MG_GAME_FILE:String = "mage.dat";
+    private static const MG_DEPTH_FILE:String = "mage%d.dat";
+
+    private static const RN_GAME_FILE:String = "ranger.dat";
+    private static const RN_DEPTH_FILE:String = "ranger%d.dat";
+
+    private static const VERSION:String = "version";
+    private static const SEED:String = "seed";
+    private static const CHALLENGES:String = "challenges";
+    private static const HERO:String = "hero";
+    private static const GOLD:String = "gold";
+    private static const DEPTH:String = "depth";
+    private static const DROPPED:String = "dropped%d";
+    private static const LEVEL:String = "level";
+    private static const LIMDROPS:String = "limited_drops";
+    private static const CHAPTERS:String = "chapters";
+    private static const QUESTS:String = "quests";
+    private static const BADGES:String = "badges";
 
     public function Dungeon() {
     }
@@ -113,8 +142,10 @@ public class Dungeon {
 
     }
 
-    public static function saveGame(fileName:String = "demo.txt"):void {
-
+    public static function saveGame(fileName:String = WR_GAME_FILE):void {
+        var bundle:Bundle = new Bundle();
+        version=MiniGame.version;
+        bundle.put(VERSION,version);
     }
 
     public static function saveLevel():void {
@@ -131,11 +162,15 @@ public class Dungeon {
 
     /**
      * 加载游戏
+     *  四个档位
+     *  RG_GAME_FILE
+     *  WR_GAME_FILE
+     *  MG_GAME_FILE
+     *  RN_GAME_FILE
      * @param fileName
      */
-    public static function loadGame(cl:HeroClass, fullLoad:Boolean = true):void {
-        //loadGame(gameFile(cl), true);
-        var bundle:Bundle = gameBundle();
+    public static function loadGame(fileName:String = WR_GAME_FILE, fullLoad:Boolean = true):void {
+        var bundle:Bundle = gameBundle(fileName);
         quickslot.reset();
         level = null;
         depth = bundle.depth;
@@ -148,23 +183,51 @@ public class Dungeon {
             SecretRoom.restoreRoomsFromBundle();
         }
         Notes.restoreRoomsFromBundle();
-
     }
 
-    private static function gameBundle():Bundle {
-        return new Bundle();
+    /**
+     * 加载关卡
+     *  四个文件
+     *  RG_DEPTH_FILE
+     *  MG_DEPTH_FILE
+     *  RN_DEPTH_FILE
+     *  WR_DEPTH_FILE
+     * @param curClass
+     * @return
+     */
+    public static function loadLevel(fileName:String = WR_DEPTH_FILE):Level {
+        Dungeon.level = null;
+        Actor.clear();
+        var bundle:Bundle = gameBundle(fileName);
+        var level:Level = bundle.get(LEVEL) as Level;
+        return level;
     }
 
+    private static function gameBundle(fileName:String):Bundle {
+        var file:File = File.applicationDirectory.resolvePath(fileName);
+        var stream:FileStream = new FileStream();
+        var bytes:ByteArray = new ByteArray();
+        stream.open(file, FileMode.READ);
+        stream.readBytes(bytes, 0, stream.bytesAvailable);
+        stream.close();
+        return Bundle.read(bytes);
+    }
+
+    /**
+     * 读取文件存档 一共四个档位
+     * @param cl
+     * @return
+     */
     public static function gameFile(cl:HeroClass):String {
         switch (cl.type) {
             case HeroClass.WARRIOR:
-                return "";
+                return WR_GAME_FILE;
             case HeroClass.HUNTRESS:
-                return "";
+                return RN_GAME_FILE;
             case HeroClass.MAGE:
-                return "";
+                return MG_GAME_FILE;
             case HeroClass.ROGUE:
-                return "";
+                return RG_GAME_FILE;
         }
         return "";
     }
@@ -197,14 +260,6 @@ public class Dungeon {
 
     private static function randomSeed():Number {
         return Math.random()
-    }
-
-    public static function loadLevel(curClass:HeroClass):Level {
-        Dungeon.level = null;
-        Actor.clear();
-        var bundle:Bundle = Bundle.readFromFile();
-        var level:Level = bundle.getLevel();
-        return level;
     }
 
     public static function seedCurDepth():* {

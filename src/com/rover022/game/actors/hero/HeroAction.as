@@ -1,5 +1,6 @@
 package com.rover022.game.actors.hero {
 import com.rover022.game.actors.Char;
+import com.rover022.game.items.Item;
 
 import flash.geom.Point;
 
@@ -29,6 +30,7 @@ public class HeroAction {
     public var pos:Point;
     public var type:String;
     public var target:Char;
+    public var item:Item;
 
     public function HeroAction(_type:String, _pos:Point) {
         this.type = _type;

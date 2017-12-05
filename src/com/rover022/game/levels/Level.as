@@ -1,5 +1,6 @@
 package com.rover022.game.levels {
 import com.rover022.game.Dungeon;
+import com.rover022.game.MiniGame;
 import com.rover022.game.actors.Actor;
 import com.rover022.game.actors.Char;
 import com.rover022.game.actors.blobs.Blob;
@@ -8,6 +9,9 @@ import com.rover022.game.actors.mobs.npcs.NPC;
 import com.rover022.game.items.Item;
 import com.rover022.game.levels.traps.Trap;
 import com.rover022.game.plants.Plant;
+import com.rover022.game.scenes.GameScene;
+import com.rover022.game.utils.Bundlable;
+import com.rover022.game.utils.Bundle;
 import com.rover022.game.utils.Pathfinder;
 
 import flash.geom.Point;
@@ -17,9 +21,9 @@ import starling.display.Sprite;
 
 import utils.PointUtil;
 
-public class Level {
-    public var width:int;
-    public var height:int;
+public class Level implements Bundlable {
+    public var width:int = 6;
+    public var height:int = 6;
     public var length:int;
 
     public var map:Array;
@@ -34,7 +38,7 @@ public class Level {
     public var pit:Array;
     //
     public var plants:Array;
-    public var blobs:Array = [];
+
     public var traps:Array;
     public var customTiles:Array;
     public var customWalls:Array
@@ -43,9 +47,30 @@ public class Level {
     public var entrance:Point;
     public var exit:Point;
     public var heaps:*;
+    //怪物数据对象
     public var mobs:Array = [];
+    //道具数据对象,障碍物对象
+    public var blobs:Array = [];
 
     public static var pathfinder:Pathfinder;
+
+    private static const VERSION:String = "version";
+    private static const WIDTH:String = "width";
+    private static const HEIGHT:String = "height";
+    private static const MAP:String = "map";
+    private static const VISITED:String = "visited";
+    private static const MAPPED:String = "mapped";
+    private static const ENTRANCE:String = "entrance";
+    private static const EXIT:String = "exit";
+    private static const LOCKED:String = "locked";
+    private static const HEAPS:String = "heaps";
+    private static const PLANTS:String = "plants";
+    private static const TRAPS:String = "traps";
+    private static const CUSTOM_TILES:String = "customTiles";
+    private static const CUSTOM_WALLS:String = "customWalls";
+    private static const MOBS:String = "mobs";
+    private static const BLOBS:String = "blobs";
+    private static const FEELING:String = "feeling";
 
     public function Level() {
     }
@@ -66,7 +91,8 @@ public class Level {
      * @return
      */
     public static function makeNewLevel():Level {
-        var level:Level = new Level();
+        Dungeon.level = new Level();
+        var level:Level = Dungeon.level;
         level.setSize(6, 6);
         level.map = [
             [0, 0, 0, 0, 0, 0],
@@ -83,7 +109,9 @@ public class Level {
 //        makeMob(new Point(4, 5));
 
         //加入一个NPC
-        var npcClass:Class = getDefinitionByName("com.rover022.minigame.actors.npcs.OldMan") as Class;
+//        var npcClass:Class = getDefinitionByName("com.rover022.minigame.actors.npcs.OldMan") as Class;
+//        var npcClass:Class = getDefinitionByName("com.rover022.game.actors.hero") as Class;
+        var npcClass:Class = getDefinitionByName("com.rover022.game.actors.mobs.npcs.NPC") as Class;
         var npc:NPC = new npcClass();
         npc.pos = Level.pointToCell(new Point(3, 5));
         level.mobs.push(npc);
@@ -93,7 +121,7 @@ public class Level {
             var mob:Mob = new Mob();
             mob.spawn(Dungeon.depth);
             mob.pos = Level.pointToCell(brokenPos);
-            level.mobs.push(mob);
+            GameScene.addMob(mob);
         }
 
         return level;
@@ -150,8 +178,36 @@ public class Level {
      * 随机一个上面没有怪物 没有英雄 没有植物的格子
      * @return
      */
-    public function randomRespawnCell():int {
-        return 0;
+    public function randomRespawnCell():Point {
+        var cell:Point;
+        var a:int;
+        var b:int;
+        do {
+            a = Math.random() * width;
+            b = Math.random() * height;
+            cell = new Point(a, b);
+
+            if (cell.x == Dungeon.hero.pos.x && cell.y == Dungeon.hero.pos.x) {
+                continue;
+            }
+            var ch:Char;
+            var item:Item;
+            var blob:Blob;
+            blob = Dungeon.level.findBlob(cell);
+            if (blob) {
+                continue;
+            }
+            ch = Dungeon.level.findMod(cell);
+            if (ch) {
+                continue;
+            }
+            item = Dungeon.level.findItem(cell);
+            if (item) {
+                continue;
+            }
+            break;
+        } while (true);
+        return cell;
     }
 
     public function randomDestination():int {
@@ -190,7 +246,16 @@ public class Level {
 
     }
 
-    public function drop(item:Item, cell:int):Item {
+    /**
+     * 掉落道具  填充数据  通知场景放置道具
+     * @param item
+     * @param cell
+     * @return
+     */
+    public function drop(item:Item, cell:Point):Item {
+        item.pos = cell;
+        this.heaps.push(item);
+        GameScene.scene.addItemSprite(item);
         return item;
     }
 
@@ -308,6 +373,18 @@ public class Level {
             return false;
         }
         return true
+    }
+
+    public function restoreFromBindle(bundle:Bundle):void {
+    }
+
+    /**
+     * @inheritDoc
+     * @param bundle
+     */
+    public function storeInBundle(bundle:Bundle):void {
+        bundle.put(VERSION, MiniGame.version);
+
     }
 }
 }

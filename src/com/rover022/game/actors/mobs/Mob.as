@@ -2,6 +2,8 @@ package com.rover022.game.actors.mobs {
 import com.rover022.game.Dungeon;
 import com.rover022.game.actors.Char;
 import com.rover022.game.actors.hero.Hero;
+import com.rover022.game.items.Generator;
+import com.rover022.game.items.Item;
 import com.rover022.game.utils.DebugTool;
 
 import flash.geom.Point;
@@ -31,6 +33,10 @@ public class Mob extends Char {
     public var enemySeen:Boolean;
     public var alerted:Boolean = false;
     private var level:int;
+    //掉落物品类型
+    public var loot:Object = null;
+    //掉落道具的机会
+    public var lootChance:Number = 0.1;
 
     //
 
@@ -114,12 +120,34 @@ public class Mob extends Char {
         if (_index != -1) {
             Dungeon.level.mobs.removeAt(_index);
             removeFromParent(true);
+            //
+            if (Math.random() < lootChance && Dungeon.hero.lvl <= maxLv1 + 2) {
+                var item:Item = createLoot();
+                if (item) {
+                    Dungeon.level.drop(item, pos);
+                }
+            }
         } else {
             trace("奇怪 怪物群没找到这个", this);
         }
-        //super.die();
+    }
 
-
+    /**
+     * 创建掉落的道具
+     * @return
+     */
+    public function createLoot():Item {
+        var item:Item;
+        if (loot is String) {
+            item = Generator.randomCategory(loot as String);
+        } else if (loot is Class) {
+            item = Generator.randomWeapon();
+        } else if (loot is Item) {
+            item = loot as Item;
+        } else {
+            item = Generator.randomItem();
+        }
+        return item;
     }
 
     /**

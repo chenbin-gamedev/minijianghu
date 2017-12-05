@@ -103,7 +103,9 @@ public class InterlevelScene extends PixelScene {
     public function restore():void {
         Actor.fixTime();
         GameLog.wipe();
-        Dungeon.loadGame(StartScene.curClass);
+
+        var fileName:String = Dungeon.gameFile(StartScene.curClass);
+        Dungeon.loadGame(fileName);
         if (Dungeon.depth == -1) {
             Dungeon.switchLevel(Dungeon.loadLevel(StartScene.curClass), new Point());
         } else {

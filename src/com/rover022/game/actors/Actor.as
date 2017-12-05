@@ -2,6 +2,8 @@ package com.rover022.game.actors {
 import com.rover022.game.Dungeon;
 import com.rover022.game.actors.buffs.Buff;
 import com.rover022.game.actors.mobs.Mob;
+import com.rover022.game.utils.Bundlable;
+import com.rover022.game.utils.Bundle;
 
 import flash.geom.Point;
 
@@ -9,7 +11,7 @@ import starling.animation.DelayedCall;
 import starling.core.Starling;
 import starling.display.Sprite;
 
-public class Actor extends Sprite {
+public class Actor extends Sprite implements Bundlable {
     public static var TICK:Number = 1;
     //回合数
     public static var now:int = 0;
@@ -119,6 +121,12 @@ public class Actor extends Sprite {
 
     public static function addDelayed(mob:Mob, delay:Number):void {
 
+    }
+
+    public function restoreFromBindle(src:Bundle):void {
+    }
+
+    public function storeInBundle(src:Bundle):void {
     }
 }
 }

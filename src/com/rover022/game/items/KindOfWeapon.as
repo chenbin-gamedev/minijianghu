@@ -1,14 +1,16 @@
 package com.rover022.game.items {
 import com.rover022.game.actors.Char;
-import com.rover022.game.items.weapon.Weapon;
 import com.rover022.game.utils.RandomeUtil;
 
+/**
+ * @inheritDoc
+ */
 public class KindOfWeapon extends EquipableItem {
     public function KindOfWeapon() {
         super();
     }
 
-    public function proc( attacker:Char, defender:Char, damage:int):int {
+    public function proc(attacker:Char, defender:Char, damage:int):int {
         return damage;
     }
 
