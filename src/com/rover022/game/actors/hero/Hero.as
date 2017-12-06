@@ -7,7 +7,6 @@ import com.rover022.game.actors.blobs.Blob;
 import com.rover022.game.actors.mobs.npcs.NPC;
 import com.rover022.game.items.Item;
 import com.rover022.game.items.KindOfWeapon;
-import com.rover022.game.items.potions.Potion;
 import com.rover022.game.items.weapon.missiles.MissileWeapon;
 import com.rover022.game.messages.Messages;
 import com.rover022.game.sprites.CharSprite;
@@ -15,7 +14,7 @@ import com.rover022.game.sprites.CharSprite;
 import flash.geom.Point;
 
 import starling.animation.DelayedCall;
-import starling.animation.Tween;
+
 import starling.core.Starling;
 
 public class Hero extends Char {
@@ -39,8 +38,6 @@ public class Hero extends Char {
     public var midVisionEnemies:Array = [];
     public var belongings:Belongings;
     public var resting:Boolean;
-    public var heroClass:HeroClass;
-    private var rangeWeapon:MissileWeapon;
 
     public function Hero() {
         super();
@@ -48,6 +45,8 @@ public class Hero extends Char {
         defenseSkill = 5;
         belongings = new Belongings(this);
         visibleEnemies = [];
+        //
+
     }
 
     public function earnExp(_exp:int):void {
@@ -106,6 +105,23 @@ public class Hero extends Char {
 
     }
 
+    /**
+     * 是否在上下左右格
+     * 可以执行动作 对话 拾取
+     * @param cell
+     * @return
+     */
+    public function isRound(cell:Point):Boolean {
+        if (cell.x == pos.x) {
+            return Math.abs(cell.y - pos.y) == 1 ? true : false;
+        }
+        if (cell.y == pos.y) {
+            return Math.abs(cell.x - pos.x) == 1 ? true : false;
+        }
+        return false;
+
+    }
+
     public function handle(cell:Point):Boolean {
         if (cell == null) {
             return false;
@@ -131,14 +147,20 @@ public class Hero extends Char {
                     curAction = new HeroAction(HeroAction.Attack, cell);
                     curAction.target = ch;
                     return act();
+                } else {
+                    return false;
                 }
             }
         }
         item = Dungeon.level.findItem(cell);
         if (item) {
-            curAction = new HeroAction(HeroAction.PickUp, cell);
-            curAction.item = item;
-            return act();
+            if (isRound(cell)) {
+                curAction = new HeroAction(HeroAction.PickUp, cell);
+                curAction.item = item;
+                return act();
+            } else {
+                return false;
+            }
         }
         //移动逻辑
         if (cell == Dungeon.level.exit && Dungeon.depth < 26) {
@@ -146,8 +168,38 @@ public class Hero extends Char {
         } else {
             curAction = new HeroAction(HeroAction.Move, cell);
         }
-        if (ready) {
-            return act();
+
+        return act();
+
+    }
+
+    /**
+     * 战士打1格
+     * 法师打2格
+     * 流氓打3格
+     * 猎人全屏
+     * @param target
+     * @return
+     */
+    override public function getCloser(target:Point):Boolean {
+        if (heroClass.type == CharClass.WARRIOR) {
+            return super.getCloser(target);
+        } else if (heroClass.type == CharClass.MAGE) {
+            var a:int = Math.abs(pos.x - target.x);
+            var b:int = Math.abs(pos.y - target.y);
+            if ((a + b) <= 2) {
+                return true;
+            }
+            return false;
+        } else if (heroClass.type == CharClass.ROGUE) {
+            a = Math.abs(pos.x - target.x);
+            b = Math.abs(pos.y - target.y);
+            if ((a + b) <= 3) {
+                return true;
+            }
+            return false;
+        } else if (heroClass.type == CharClass.HUNTRESS) {
+            return true;
         }
         return false;
     }
@@ -157,6 +209,11 @@ public class Hero extends Char {
      * @return
      */
     override public function act():Boolean {
+        if (ready == false) {
+            trace("read is false");
+            return false;
+        }
+        //
         if (curAction == null) {
             if (resting) {
                 //spend(TIME_TO_REST);
@@ -168,31 +225,39 @@ public class Hero extends Char {
 
         } else {
             //执行行动逻辑...行动完成之后跑Actor.process()
-            Starling.juggler.delayCall(Actor.process, baseSpeed);
+            trace("英雄执行动作", curAction.type);
+            //50% time 次完成攻击计算
+            //100% time 跑下一次逻辑
+            //有攻击动作 +0.5秒(总1秒) 没有攻击动作就只有0.5秒;
+
+            //Starling.juggler.delayCall(Actor.process, curAction.speedTime);
             resting = false;
             ready = false;
+            var isState:Boolean = false;
             if (curAction.type == HeroAction.Move) {
-                return actMove(curAction);
+                isState = actMove(curAction);
             } else if (curAction.type == HeroAction.Interact) {
-                return actInteract(curAction);
+                isState = actInteract(curAction);
             } else if (curAction.type == HeroAction.Buy) {
-                return actBuy(curAction);
+                isState = actBuy(curAction);
             } else if (curAction.type == HeroAction.PickUp) {
-                return actPickUp(curAction);
+                isState = actPickUp(curAction);
             } else if (curAction.type == HeroAction.OpenChest) {
-                return actOpenChest(curAction);
+                isState = actOpenChest(curAction);
             } else if (curAction.type == HeroAction.Unlock) {
-                return actUnlock(curAction);
+                isState = actUnlock(curAction);
             } else if (curAction.type == HeroAction.Descend) {
-                return actDescend(curAction);
+                isState = actDescend(curAction);
             } else if (curAction.type == HeroAction.Ascend) {
-                return actAscend(curAction);
+                isState = actAscend(curAction);
             } else if (curAction.type == HeroAction.Attack) {
-                return actAttack(curAction);
+                isState = actAttack(curAction);
             } else if (curAction.type == HeroAction.Alchemy) {
-                return actAlchemy(curAction);
+                isState = actAlchemy(curAction);
             }
-            return false;
+            trace("英雄这次", curAction.type, "行动花费时间:", time, "秒");
+            Starling.juggler.delayCall(Actor.process, time);
+            return isState;
         }
     }
 
@@ -205,29 +270,12 @@ public class Hero extends Char {
     }
 
     public function actAttack(action:HeroAction):Boolean {
+
         enemy = action.target;
         if (enemy.isAlive() && canAttack(enemy) && !isCharmedBy(enemy)) {
-            //Invisibility.dispel();
-            //spend(attackDelay());
-            //sprite.attack(enemy.pos);
 
-//            HeroClass.ROGUE
-            //执行动画程序
-            var tween:Tween;
-            if (heroClass.type == HeroClass.WARRIOR) {
-                tween = new Tween(this, baseSpeed);
-                tween.moveTo(enemy.x, enemy.y);
-                tween.reverse = true;
-                tween.repeatCount = 2;
-                Starling.juggler.add(tween);
-            } else {
-                shoot(enemy, null);
-            }
-            //完毕以后执行攻击动作
-            var delayCall:DelayedCall = new DelayedCall(attack, baseSpeed, [enemy]);
-            Starling.juggler.add(delayCall);
-//            attack(enemy);
-//            ready = true;
+            doAttack(enemy);
+
             return true;
         } else {
             trace("enemy isAlive ", enemy.isAlive());
@@ -270,7 +318,6 @@ public class Hero extends Char {
         var item:Item = Dungeon.level.findItem(dst);
         if (item != null) {
             if (item.doPickUp(this)) {
-
                 trace("拾取成功");
             }
         }
@@ -294,7 +341,7 @@ public class Hero extends Char {
     }
 
     override public function onCompleteTweener():void {
-        ready = true;
+
     }
 
     override public function onCompleteAnimation():void {

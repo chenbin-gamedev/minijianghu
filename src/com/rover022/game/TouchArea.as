@@ -27,11 +27,11 @@ public class TouchArea extends Sprite {
     }
 
     protected function onTouchUp(event:TouchEvent):void {
-        trace("onTouchUp")
+        // trace("onTouchUp")
     }
 
     protected function onTouchDown(event:TouchEvent):void {
-        trace("onTouchDown")
+        // trace("onTouchDown")
     }
 
     private function isPressed(event:TouchEvent):void {

@@ -1,4 +1,5 @@
 package com.rover022.game.items.weapon.missiles {
+import com.rover022.game.actors.Char;
 import com.rover022.game.actors.hero.Hero;
 import com.rover022.game.items.weapon.Weapon;
 import com.rover022.game.tiles.DungeonTilemap;
@@ -27,8 +28,10 @@ public class MissileWeapon extends Weapon {
      * @inheritDoc
      *
      */
-    override public function throwPos(user:Hero, dst:Point):void {
+    override public function throwPos(user:Char, dst:Point):void {
         var disPlay:DisplayObject = getWeaponBullet();
+        disPlay.x = DungeonTilemap.SIZE * user.pos.x;
+        disPlay.y = DungeonTilemap.SIZE * user.pos.y;
         var _parent:DisplayObjectContainer = user.parent;
         _parent.addChild(disPlay);
         var tween:Tween = new Tween(disPlay, baseSpeed);

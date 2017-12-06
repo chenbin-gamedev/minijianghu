@@ -1,15 +1,21 @@
 package com.rover022.game.items {
 import com.rover022.game.Dungeon;
+import com.rover022.game.actors.Char;
 import com.rover022.game.actors.hero.Hero;
 import com.rover022.game.items.bags.Bag;
 import com.rover022.game.scenes.GameScene;
+import com.rover022.game.tiles.DungeonTilemap;
 import com.rover022.game.utils.Bundlable;
 import com.rover022.game.utils.Bundle;
+import com.rover022.game.utils.DebugTool;
+import com.rover022.game.utils.TweenUtils;
 
 import flash.geom.Point;
 import flash.utils.getQualifiedClassName;
 
+import starling.animation.Transitions;
 import starling.display.Sprite;
+import starling.text.TextField;
 
 public class Item extends Sprite implements Bundlable {
     //药水
@@ -25,9 +31,11 @@ public class Item extends Sprite implements Bundlable {
     public var curItem:Item;
     public var defaultAction:String;
     public var usesTargeting:Boolean;
-    public const TIME_TO_THROW:Number = 1;
-    public const TIME_TO_PICK_UP:Number = 1;
-    public const TIME_TO_DROP:Number = 1;
+
+    //
+    //public const TIME_TO_THROW:Number = 1;
+    //public const TIME_TO_PICK_UP:Number = 1;
+    //public const TIME_TO_DROP:Number = 1;
     //放下
     public const AC_DROP:String = "DORP";
     //扔
@@ -51,6 +59,18 @@ public class Item extends Sprite implements Bundlable {
     public var pos:Point;
 
     public function Item() {
+        initDrawDebug();
+    }
+
+    protected function initDrawDebug():void {
+        if (Dungeon.isdebug) {
+            addChild(DebugTool.makeImage(30, 0x00ff00));
+            var _name:String = getQualifiedClassName(this);
+            var _nameArray:Array = _name.split(".");
+
+            var text:TextField = new TextField(44, 20, _nameArray[_nameArray.length - 1]);
+            addChild(text);
+        }
     }
 
     public function getLevel():Number {
@@ -63,6 +83,7 @@ public class Item extends Sprite implements Bundlable {
 
     /**
      * 道具被拾起
+     * 检查道具被装进口袋逻辑
      * 如果道具被装载进了英雄的包裹
      * 道具显示元素不需要自己再次移除了
      * @param hero
@@ -70,13 +91,15 @@ public class Item extends Sprite implements Bundlable {
      */
     public function doPickUp(hero:Hero):Boolean {
         if (collect(hero.belongings.backpack)) {
+            //清理地面
             var index:int = Dungeon.level.blobs.indexOf(this);
             if (index != -1) {
                 Dungeon.level.blobs.removeAt(index);
             }
-            //
+            //播放收取道具动画;
+            TweenUtils.move(this, new Point(0, 0), Transitions.EASE_IN_BACK);
             GameScene.pickUp(this, hero.pos);
-            hero.spendAndNext(TIME_TO_PICK_UP);
+//            hero.spendAndNext(TIME_TO_PICK_UP);
             return true;
         }
         return false;
@@ -118,8 +141,10 @@ public class Item extends Sprite implements Bundlable {
         return false;
     }
 
-    public function reset():void {
-
+    public function reset():Boolean {
+        x = DungeonTilemap.SIZE * pos.x;
+        y = DungeonTilemap.SIZE * pos.y;
+        return true;
     }
 
     public function doThrow(hero:Hero):void {
@@ -138,10 +163,10 @@ public class Item extends Sprite implements Bundlable {
 
     /**
      * 把道具甩到这个坐标点去
-     * @param user
-     * @param dst
+     * @param user 使用这个武器者
+     * @param dst  目标坐标点
      */
-    public function throwPos(user:Hero, dst:Point):void {
+    public function throwPos(user:Char, dst:Point):void {
 
     }
 
@@ -160,7 +185,7 @@ public class Item extends Sprite implements Bundlable {
         var items:Vector.<Item> = container.items;
 
         if (items.indexOf(this) != -1) {
-            //如果再次包含这个道具直接放回
+            //如果再次包含这个道具直接放回 一般不会这样
             return true;
         }
 
@@ -173,6 +198,7 @@ public class Item extends Sprite implements Bundlable {
                 }
             }
         }
+        //如果包裹还有空间
         if (items.length < container.size) {
             items.push(this);
             Dungeon.quickslot.replacePlaceholder(this);
@@ -210,7 +236,7 @@ public class Item extends Sprite implements Bundlable {
         return this;
     }
 
-    public function restoreFromBindle(src:Bundle):void {
+    public function restoreFromBundle(src:Bundle):void {
     }
 
     public function storeInBundle(src:Bundle):void {

@@ -4,6 +4,7 @@ import com.rover022.game.actors.Char;
 import com.rover022.game.actors.hero.Hero;
 import com.rover022.game.items.Generator;
 import com.rover022.game.items.Item;
+import com.rover022.game.utils.Bundle;
 import com.rover022.game.utils.DebugTool;
 
 import flash.geom.Point;
@@ -28,7 +29,6 @@ public class Mob extends Char {
 //    public var defenseSkill:int = 0;
     public var EXP:int = 1;
     public var maxLv1:int = Hero.MAX_LEVEL;
-    //
 
     public var enemySeen:Boolean;
     public var alerted:Boolean = false;
@@ -44,7 +44,6 @@ public class Mob extends Char {
         super();
         alignment = ENEMY;
         actPriority = 2;
-//        name = Messages.get(this.toString(), "name");
     }
 
     override protected function initDrawDebug():void {
@@ -53,13 +52,17 @@ public class Mob extends Char {
         }
     }
 
-    override public function storeInBundle():void {
-        super.storeInBundle();
+    /**
+     * @inheritDocn
+     * @param src
+     */
+    override public function storeInBundle(src:Bundle):void {
+
     }
 
     override public function act():Boolean {
-        //move()
-        trace("怪物", state, "思考");
+
+        trace(this, state, "思考");
         var enemy:Char = chooseEnemy();
         if (enemy.isAlive()) {
             state.act();
@@ -87,9 +90,19 @@ public class Mob extends Char {
         return 1;
     }
 
-    public function doAttack(enemy:Char):Boolean {
-        return true;
-    }
+//    public function doAttack(enemy:Char):Boolean {
+//        var tween:Tween;
+//        if (type == CharClass.WARRIOR) {
+//            tween = new Tween(this, Actor.gameSpeed);
+//            tween.moveTo(enemy.x, enemy.y);
+//            tween.reverse = true;
+//            tween.repeatCount = 2;
+//            Starling.juggler.add(tween);
+//        } else {
+//            shoot(enemy, rangeWeapon);
+//        }
+//        return true;
+//    }
 
     public function reset():Boolean {
         x = SIZE * pos.x;
@@ -116,16 +129,19 @@ public class Mob extends Char {
     }
 
     override public function die():void {
+        trace("怪物死掉.", pos);
         var _index:int = Dungeon.level.mobs.indexOf(this);
         if (_index != -1) {
             Dungeon.level.mobs.removeAt(_index);
             removeFromParent(true);
+            trace("怪物从数据库移除.")
             //
-            if (Math.random() < lootChance && Dungeon.hero.lvl <= maxLv1 + 2) {
-                var item:Item = createLoot();
-                if (item) {
-                    Dungeon.level.drop(item, pos);
-                }
+            var item:Item = createLoot();
+            if (item) {
+                trace("怪物掉落道具.", item, pos);
+                Dungeon.level.drop(item, pos);
+            } else {
+                trace("怪物没有掉落道具.")
             }
         } else {
             trace("奇怪 怪物群没找到这个", this);
@@ -275,14 +291,13 @@ class Hunting extends AiState {
                 owner.doAttack(enemy);
             } else {
                 //怪物先改变自己的pos值 然后播放动画不会造成后面的怪物移动位置冲突
-                var oldPos:Point = owner.pos
+                var oldPos:Point = owner.pos;
                 if (owner.getNextPos(enemy)) {
                     trace("怪物移动", owner.name, "oldPos", oldPos, "newPos", owner.pos);
                     owner.move(owner.pos);
                 } else {
                     trace("怪物无法移动");
                 }
-
             }
         }
     }

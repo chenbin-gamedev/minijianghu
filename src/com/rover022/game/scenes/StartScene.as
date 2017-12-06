@@ -1,13 +1,13 @@
 package com.rover022.game.scenes {
 import com.rover022.game.Dungeon;
 import com.rover022.game.MiniGame;
-import com.rover022.game.actors.hero.HeroClass;
+import com.rover022.game.actors.hero.CharClass;
 
 /**
  * 游戏开始场景
  */
 public class StartScene extends PixelScene {
-    public static var curClass:HeroClass;
+    public static var curClass:CharClass;
 
     public function StartScene() {
         super();

@@ -53,7 +53,7 @@ public class Belongings implements Bundlable {
         return null;
     }
 
-    public function restoreFromBindle(src:Bundle):void {
+    public function restoreFromBundle(src:Bundle):void {
     }
 
     public function storeInBundle(src:Bundle):void {

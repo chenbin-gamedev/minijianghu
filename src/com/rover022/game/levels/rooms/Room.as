@@ -6,7 +6,7 @@ public class Room implements Bundlable {
     public function Room() {
     }
 
-    public function restoreFromBindle(src:Bundle):void {
+    public function restoreFromBundle(src:Bundle):void {
     }
 
     public function storeInBundle(src:Bundle):void {

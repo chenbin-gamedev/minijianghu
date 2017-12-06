@@ -2,15 +2,18 @@ package com.rover022.game {
 import com.rover022.game.actors.Actor;
 import com.rover022.game.actors.Char;
 import com.rover022.game.actors.hero.Hero;
-import com.rover022.game.actors.hero.HeroClass;
+import com.rover022.game.actors.hero.CharClass;
+import com.rover022.game.actors.mobs.Mob;
 import com.rover022.game.actors.mobs.npcs.Ghost;
 import com.rover022.game.actors.mobs.npcs.Wandmaker;
 import com.rover022.game.items.Generator;
+import com.rover022.game.items.Item;
 import com.rover022.game.journal.Notes;
 import com.rover022.game.levels.Level;
 import com.rover022.game.levels.SewerLevel;
 import com.rover022.game.levels.rooms.secret.SecretRoom;
 import com.rover022.game.levels.rooms.special.SpecialRoom;
+import com.rover022.game.utils.Bundlable;
 import com.rover022.game.utils.Bundle;
 
 import flash.filesystem.File;
@@ -58,10 +61,15 @@ public class Dungeon {
     private static const CHAPTERS:String = "chapters";
     private static const QUESTS:String = "quests";
     private static const BADGES:String = "badges";
+    private static const QUICKSLOT:String = "quickslot";
 
     public function Dungeon() {
+
     }
 
+    /**
+     * 地下城初始化
+     */
     public static function init():void {
         version = MiniGame.version;
         seed = Dungeon.randomSeed();
@@ -88,7 +96,6 @@ public class Dungeon {
         hero.live();
         //
         Badges.reset();
-//        StartScene.curClass.initHero(hero);
     }
 
     public static function isChallenged():Boolean {
@@ -132,6 +139,7 @@ public class Dungeon {
             pos = new Point();
         }
         Dungeon.level = level;
+        Actor.init();
         hero.pos = pos;
         hero.curAction = hero.lastAction = null;
         observe();
@@ -139,16 +147,6 @@ public class Dungeon {
     }
 
     public static function observe():void {
-
-    }
-
-    public static function saveGame(fileName:String = WR_GAME_FILE):void {
-        var bundle:Bundle = new Bundle();
-        version=MiniGame.version;
-        bundle.put(VERSION,version);
-    }
-
-    public static function saveLevel():void {
 
     }
 
@@ -161,6 +159,23 @@ public class Dungeon {
     }
 
     /**
+     * 保存游戏文件
+     * @param fileName
+     */
+    public static function saveGame(fileName:String = WR_GAME_FILE):void {
+        var bundle:Bundle = new Bundle();
+        version = MiniGame.version;
+        bundle.put(VERSION, version);
+        bundle.put(HERO, hero);
+        bundle.put(GOLD, gold);
+        bundle.put(DEPTH, depth);
+        bundle.put(LEVEL, level);
+        bundle.put(BADGES, hero.belongings);
+        bundle.put(QUICKSLOT, quickslot);
+        Bundle.write(bundle, fileName);
+    }
+
+    /**
      * 加载游戏
      *  四个档位
      *  RG_GAME_FILE
@@ -170,12 +185,13 @@ public class Dungeon {
      * @param fileName
      */
     public static function loadGame(fileName:String = WR_GAME_FILE, fullLoad:Boolean = true):void {
-        var bundle:Bundle = gameBundle(fileName);
+        var bundle:Bundle = Bundle.read(fileName);
         quickslot.reset();
         level = null;
-        depth = bundle.depth;
-        gold = bundle.gold;
-        hero = bundle.getHero();
+        depth = bundle.getInt(DEPTH);
+        gold = bundle.getInt(GOLD);
+        hero = bundle.getBundle(HERO) as Hero;
+        level = bundle.getBundle(LEVEL) as Level;
         droppedItems = bundle.getDroppedItems();
         //
         if (fullLoad) {
@@ -183,34 +199,33 @@ public class Dungeon {
             SecretRoom.restoreRoomsFromBundle();
         }
         Notes.restoreRoomsFromBundle();
+        //
+        Dungeon.init();
     }
 
     /**
-     * 加载关卡
-     *  四个文件
-     *  RG_DEPTH_FILE
-     *  MG_DEPTH_FILE
-     *  RN_DEPTH_FILE
-     *  WR_DEPTH_FILE
-     * @param curClass
+     *  保存关卡 RG_DEPTH_FILE,MG_DEPTH_FILE,RN_DEPTH_FILE,WR_DEPTH_FILE
+     * @param fileName
+     * @return
+     */
+    public static function saveLevel(fileName:String = WR_DEPTH_FILE):void {
+        var bundle:Bundle = new Bundle();
+        level.storeInBundle(bundle);
+        Bundle.write(bundle, fileName);
+    }
+
+    /**
+     * 加载关卡 RG_DEPTH_FILE,MG_DEPTH_FILE,RN_DEPTH_FILE,WR_DEPTH_FILE
+     * @param fileName
      * @return
      */
     public static function loadLevel(fileName:String = WR_DEPTH_FILE):Level {
         Dungeon.level = null;
         Actor.clear();
-        var bundle:Bundle = gameBundle(fileName);
-        var level:Level = bundle.get(LEVEL) as Level;
+        var bundle:Bundle = Bundle.read(fileName);
+        var level:Level = new Level();
+        level.restoreFromBundle(bundle);
         return level;
-    }
-
-    private static function gameBundle(fileName:String):Bundle {
-        var file:File = File.applicationDirectory.resolvePath(fileName);
-        var stream:FileStream = new FileStream();
-        var bytes:ByteArray = new ByteArray();
-        stream.open(file, FileMode.READ);
-        stream.readBytes(bytes, 0, stream.bytesAvailable);
-        stream.close();
-        return Bundle.read(bytes);
     }
 
     /**
@@ -218,15 +233,15 @@ public class Dungeon {
      * @param cl
      * @return
      */
-    public static function gameFile(cl:HeroClass):String {
+    public static function gameFile(cl:CharClass):String {
         switch (cl.type) {
-            case HeroClass.WARRIOR:
+            case CharClass.WARRIOR:
                 return WR_GAME_FILE;
-            case HeroClass.HUNTRESS:
+            case CharClass.HUNTRESS:
                 return RN_GAME_FILE;
-            case HeroClass.MAGE:
+            case CharClass.MAGE:
                 return MG_GAME_FILE;
-            case HeroClass.ROGUE:
+            case CharClass.ROGUE:
                 return RG_GAME_FILE;
         }
         return "";
@@ -264,6 +279,15 @@ public class Dungeon {
 
     public static function seedCurDepth():* {
 
+    }
+
+    public static function getFristMob():Mob {
+        for each (var mob:Mob in level.mobs) {
+            if (mob.alignment == Char.ENEMY) {
+                return mob;
+            }
+        }
+        return null;
     }
 }
 }

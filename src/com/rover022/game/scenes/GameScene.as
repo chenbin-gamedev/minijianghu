@@ -67,7 +67,7 @@ public class GameScene extends PixelScene {
     //特效层
     public var effects:Sprite;
     //气体层
-    public var gases:Sprite;
+    public var blobs:Sprite;
     //魔法层
     public var spells:Sprite;
     //状态层
@@ -77,7 +77,7 @@ public class GameScene extends PixelScene {
     //血条层
     public var healthIndicators:Sprite;
     //
-    public var toolbar:Toolbar;
+    public var toolbar:Toolbar = new Toolbar();
     public var prompt:Toast = new Toast();
     public var hero:Hero;
     public var tiles:DungenTerrainTilemap;
@@ -110,7 +110,7 @@ public class GameScene extends PixelScene {
         mobs = makeSprite();
         emitters = makeSprite();
         effects = makeSprite();
-        gases = makeSprite();
+        blobs = makeSprite();
         spells = makeSprite();
         statuses = makeSprite();
         emoicons = makeSprite();
@@ -186,10 +186,10 @@ public class GameScene extends PixelScene {
         }
     }
 
-    public static function addBlob(gas:Blob):void {
-        Actor.add(gas);
+    public static function addBlob(blob:Blob):void {
+        Actor.add(blob);
         if (scene != null) {
-            scene.addBlobSprite(gas);
+            scene.addBlobSprite(blob);
         }
     }
 
@@ -219,14 +219,6 @@ public class GameScene extends PixelScene {
         Actor.addDelayed(mob, delay);
         scene.addMobSprite(mob);
     }
-
-//public static function addEmoIcon(  icon:EmoIcon ):void {
-//        scene.emoicons.add( icon );
-//    }
-
-//public static function addCharHealthIndicator(  indicator:CharHealthIndicator ){
-//        if (scene != null) scene.healthIndicators.add(indicator);
-//    }
 
     /**
      * 选择了单元格
@@ -450,7 +442,7 @@ public class GameScene extends PixelScene {
     }
 
     public function addBlobSprite(gas:Blob):void {
-        gases.addChild(gas);
+        blobs.addChild(gas);
     }
 
     public function addPlantSprite(plant:Plant):void {
@@ -464,8 +456,8 @@ public class GameScene extends PixelScene {
     }
 
     public function addItemSprite(item:Item):void {
-        gases.addChild(item);
         item.reset();
+        blobs.addChild(item);
     }
 }
 }

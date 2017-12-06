@@ -43,7 +43,7 @@ public class InterlevelScene extends PixelScene {
             level = Dungeon.newLevel();
         } else {
             Dungeon.depth++;
-            level = Dungeon.loadLevel(Dungeon.hero.heroClass);
+            level = Dungeon.loadLevel();
         }
         Dungeon.switchLevel(level, level.exit);
     }
@@ -57,7 +57,7 @@ public class InterlevelScene extends PixelScene {
             level = Dungeon.newLevel();
         } else {
             Dungeon.depth++;
-            level = Dungeon.loadLevel(Dungeon.hero.heroClass);
+            level = Dungeon.loadLevel( );
         }
         Dungeon.switchLevel(level, level.entrance);
     }
@@ -68,7 +68,7 @@ public class InterlevelScene extends PixelScene {
             level = Dungeon.newLevel();
         } else {
             Dungeon.depth++;
-            level = Dungeon.loadLevel(Dungeon.hero.heroClass);
+            level = Dungeon.loadLevel( );
         }
         Dungeon.switchLevel(level, level.entrance);
     }
@@ -81,7 +81,7 @@ public class InterlevelScene extends PixelScene {
             level = Dungeon.newLevel();
         } else {
             Dungeon.depth++;
-            level = Dungeon.loadLevel(Dungeon.hero.heroClass);
+            level = Dungeon.loadLevel( );
         }
         Dungeon.switchLevel(level, level.fallCell(fallIntoPit));
     }
@@ -107,9 +107,9 @@ public class InterlevelScene extends PixelScene {
         var fileName:String = Dungeon.gameFile(StartScene.curClass);
         Dungeon.loadGame(fileName);
         if (Dungeon.depth == -1) {
-            Dungeon.switchLevel(Dungeon.loadLevel(StartScene.curClass), new Point());
+            Dungeon.switchLevel(Dungeon.loadLevel( ), new Point());
         } else {
-            var level:Level = Dungeon.loadLevel(StartScene.curClass);
+            var level:Level = Dungeon.loadLevel( );
             Dungeon.switchLevel(level, Dungeon.hero.pos);
         }
     }

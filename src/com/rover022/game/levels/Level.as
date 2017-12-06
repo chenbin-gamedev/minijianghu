@@ -1,6 +1,5 @@
 package com.rover022.game.levels {
 import com.rover022.game.Dungeon;
-import com.rover022.game.MiniGame;
 import com.rover022.game.actors.Actor;
 import com.rover022.game.actors.Char;
 import com.rover022.game.actors.blobs.Blob;
@@ -71,6 +70,7 @@ public class Level implements Bundlable {
     private static const MOBS:String = "mobs";
     private static const BLOBS:String = "blobs";
     private static const FEELING:String = "feeling";
+    private var version:String = "1.0.1";
 
     public function Level() {
     }
@@ -254,7 +254,7 @@ public class Level implements Bundlable {
      */
     public function drop(item:Item, cell:Point):Item {
         item.pos = cell;
-        this.heaps.push(item);
+        this.blobs.push(item);
         GameScene.scene.addItemSprite(item);
         return item;
     }
@@ -334,7 +334,7 @@ public class Level implements Bundlable {
     }
 
     public function findItem(cell:Point):Item {
-        for each (var item:Item in Dungeon.droppedItems) {
+        for each (var item:Item in blobs) {
             if (PointUtil.equit(cell, item.pos)) {
                 return item;
             }
@@ -375,7 +375,18 @@ public class Level implements Bundlable {
         return true
     }
 
-    public function restoreFromBindle(bundle:Bundle):void {
+    /**
+     * @inheritDoc
+     * @param bundle
+     */
+    public function restoreFromBundle(bundle:Bundle):void {
+        version = bundle.getString(VERSION);
+        width = bundle.getInt(WIDTH);
+        height = bundle.getInt(HEIGHT);
+//        map = bundle.getValue(MAP);
+        mobs = bundle.getBundleList(MOBS);
+        blobs = bundle.getBundleList(BLOBS);
+
     }
 
     /**
@@ -383,8 +394,15 @@ public class Level implements Bundlable {
      * @param bundle
      */
     public function storeInBundle(bundle:Bundle):void {
-        bundle.put(VERSION, MiniGame.version);
-
+        bundle.put(VERSION, version);
+        bundle.put(WIDTH, width);
+        bundle.put(HEIGHT, height);
+        bundle.put(MAP, map);
+        bundle.putBundleList(MOBS, mobs);//里面包含怪物 英雄
+        bundle.putBundleList(BLOBS, blobs);//里面包含障碍物 掉落道具 入口和出口
+        //可扩展数据
+        bundle.putBundleList(PLANTS, plants);
+        bundle.putBundleList(TRAPS, traps);
     }
 }
 }

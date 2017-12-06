@@ -1,4 +1,5 @@
 package com.rover022.game.actors.hero {
+import com.rover022.game.actors.Actor;
 import com.rover022.game.actors.Char;
 import com.rover022.game.items.Item;
 
@@ -35,6 +36,16 @@ public class HeroAction {
     public function HeroAction(_type:String, _pos:Point) {
         this.type = _type;
         this.pos = _pos;
+    }
+
+    public function get speedTime():Number {
+        if (type == Attack) {
+            return Actor.gameSpeed * 2
+        } else {
+            return Actor.gameSpeed;
+        }
+
+
     }
 }
 }

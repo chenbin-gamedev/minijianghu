@@ -10,7 +10,7 @@ public interface Bundlable {
      * 快速读取
      * @param bundle
      */
-    function restoreFromBindle(bundle:Bundle):void;
+    function restoreFromBundle(bundle:Bundle):void;
 
     /**
      * 快速保存
