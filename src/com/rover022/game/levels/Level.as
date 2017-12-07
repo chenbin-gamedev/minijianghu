@@ -127,8 +127,11 @@ public class Level implements Bundlable {
         return level;
     }
 
+    /**
+     * 根据现有的数据 建立怪物 植物 和英雄
+     */
     public function reset():void {
-
+        GameScene.scene.rebuildScene();
     }
 
     public function creatMod():void {
@@ -383,10 +386,9 @@ public class Level implements Bundlable {
         version = bundle.getString(VERSION);
         width = bundle.getInt(WIDTH);
         height = bundle.getInt(HEIGHT);
-//        map = bundle.getValue(MAP);
-        mobs = bundle.getBundleList(MOBS);
-        blobs = bundle.getBundleList(BLOBS);
-
+        map = bundle.getArray(MAP);
+        mobs = bundle.getBundlableList(MOBS);
+        blobs = bundle.getBundlableList(BLOBS);
     }
 
     /**

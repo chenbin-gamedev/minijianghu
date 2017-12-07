@@ -32,6 +32,12 @@ public class Item extends Sprite implements Bundlable {
     public var defaultAction:String;
     public var usesTargeting:Boolean;
 
+    private static const QUANTITY:String = "quantity";
+    private static const LEVEL:String = "level";
+    private static const LEVLE_KNOWN:String = "levelKnown";
+    private static const CURSED:String = "cursed";
+    private static const CURSED_KNOW:String = "cursedKnown";
+
     //
     //public const TIME_TO_THROW:Number = 1;
     //public const TIME_TO_PICK_UP:Number = 1;
@@ -182,7 +188,7 @@ public class Item extends Sprite implements Bundlable {
      * @return
      */
     public function collect(container:Bag):Boolean {
-        var items:Vector.<Item> = container.items;
+        var items:Array = container.items;
 
         if (items.indexOf(this) != -1) {
             //如果再次包含这个道具直接放回 一般不会这样
@@ -236,10 +242,21 @@ public class Item extends Sprite implements Bundlable {
         return this;
     }
 
-    public function restoreFromBundle(src:Bundle):void {
+    public function restoreFromBundle(bundle:Bundle):void {
+        bundle.put(QUANTITY, quantity);
+        bundle.put(LEVEL, level);
+        bundle.put(LEVLE_KNOWN, levelKnown);
+        bundle.put(CURSED, cursed);
+        bundle.put(CURSED_KNOW, cursedKnown);
+
     }
 
-    public function storeInBundle(src:Bundle):void {
+    public function storeInBundle(bundle:Bundle):void {
+        quantity = bundle.getInt(QUANTITY);
+        level = bundle.getInt(QUANTITY);
+        levelKnown = bundle.getBoolean(LEVLE_KNOWN);
+        cursed = bundle.getBoolean(CURSED);
+        cursedKnown = bundle.getBoolean(CURSED_KNOW);
     }
 }
 }

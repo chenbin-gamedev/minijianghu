@@ -37,27 +37,20 @@ public class InterlevelScene extends PixelScene {
         super.create();
     }
 
-    public function ascend():void {
-        var level:Level;
-        if (Dungeon.depth >= Statistics.deepesFloor) {
-            level = Dungeon.newLevel();
-        } else {
-            Dungeon.depth++;
-            level = Dungeon.loadLevel();
-        }
-        Dungeon.switchLevel(level, level.exit);
-    }
-
-    public function descend():void {
+    /**
+     * 进入地下城
+     */
+    public function enterDungeon():void {
         var level:Level;
         if (Dungeon.hero == null) {
             Dungeon.init();
         }
-        if (Dungeon.depth >= Statistics.deepesFloor) {
+        if (Dungeon.depth == 0) {
             level = Dungeon.newLevel();
         } else {
+            trace("进入深层")
             Dungeon.depth++;
-            level = Dungeon.loadLevel( );
+            level = Dungeon.loadLevel();
         }
         Dungeon.switchLevel(level, level.entrance);
     }
@@ -68,7 +61,7 @@ public class InterlevelScene extends PixelScene {
             level = Dungeon.newLevel();
         } else {
             Dungeon.depth++;
-            level = Dungeon.loadLevel( );
+            level = Dungeon.loadLevel();
         }
         Dungeon.switchLevel(level, level.entrance);
     }
@@ -81,7 +74,7 @@ public class InterlevelScene extends PixelScene {
             level = Dungeon.newLevel();
         } else {
             Dungeon.depth++;
-            level = Dungeon.loadLevel( );
+            level = Dungeon.loadLevel();
         }
         Dungeon.switchLevel(level, level.fallCell(fallIntoPit));
     }
@@ -107,9 +100,9 @@ public class InterlevelScene extends PixelScene {
         var fileName:String = Dungeon.gameFile(StartScene.curClass);
         Dungeon.loadGame(fileName);
         if (Dungeon.depth == -1) {
-            Dungeon.switchLevel(Dungeon.loadLevel( ), new Point());
+            Dungeon.switchLevel(Dungeon.loadLevel(), new Point());
         } else {
-            var level:Level = Dungeon.loadLevel( );
+            var level:Level = Dungeon.loadLevel();
             Dungeon.switchLevel(level, Dungeon.hero.pos);
         }
     }

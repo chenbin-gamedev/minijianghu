@@ -52,14 +52,6 @@ public class Mob extends Char {
         }
     }
 
-    /**
-     * @inheritDocn
-     * @param src
-     */
-    override public function storeInBundle(src:Bundle):void {
-
-    }
-
     override public function act():Boolean {
 
         trace(this, state, "思考");
@@ -104,11 +96,7 @@ public class Mob extends Char {
 //        return true;
 //    }
 
-    public function reset():Boolean {
-        x = SIZE * pos.x;
-        y = SIZE * pos.y;
-        return true;
-    }
+
 
     public function yell(src:String):void {
 

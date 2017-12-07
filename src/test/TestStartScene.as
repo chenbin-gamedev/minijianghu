@@ -16,14 +16,12 @@ public class TestStartScene extends StartScene {
 
     override public function create():void {
         super.create();
-        var btn:MenuButton = new MenuButton("进入场景");
-        addChild(btn);
-        btn.addEventListener(Event.TRIGGERED, onStartClick);
+        var btn:MenuButton;
 
         btn = new MenuButton("加载");
         btn.x = btn.width;
         addChild(btn);
-        btn.addEventListener(Event.TRIGGERED, onLoadClick);
+        btn.addEventListener(Event.TRIGGERED, onStartClick);
     }
 
     public static function initTestFunButton(_x:Number, _y:Number, _txt:String, onLoadClick:Function):MenuButton {
@@ -34,17 +32,15 @@ public class TestStartScene extends StartScene {
         return btn;
     }
 
-    private function onLoadClick(event:Event):void {
-
-    }
-
     private function onStartClick(event:Event):void {
         startNewGame();
     }
 
     override public function startNewGame():void {
-        Dungeon.hero = null;
+        //
         InterlevelScene.mode = InterlevelScene.DESCEND;
+        //加载游戏数据
+        Dungeon.loadGame("11.dat");
         //进入游戏场景
         MiniGame.switchScene(GameScene);
         MiniGame.scene.addChild(new WndTest());
@@ -53,8 +49,7 @@ public class TestStartScene extends StartScene {
 }
 
 import com.rover022.game.Dungeon;
-import com.rover022.game.MiniGame;
-import com.rover022.game.scenes.GameScene;
+import com.rover022.game.levels.Level;
 import com.rover022.game.ui.Window;
 
 import starling.events.Event;
@@ -82,7 +77,8 @@ class WndTest extends Window {
     }
 
     private function onLoadLevelClick(e:Event):void {
-        Dungeon.loadLevel();
+        var level:Level = Dungeon.loadLevel();
+        Dungeon.switchLevel(level, level.entrance);
     }
 
     private function onSaveClick(e:Event):void {

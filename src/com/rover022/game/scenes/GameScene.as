@@ -1,6 +1,7 @@
 package com.rover022.game.scenes {
 import com.rover022.game.Dungeon;
 import com.rover022.game.actors.Actor;
+import com.rover022.game.actors.Char;
 import com.rover022.game.actors.blobs.Blob;
 import com.rover022.game.actors.hero.Hero;
 import com.rover022.game.actors.mobs.Mob;
@@ -138,11 +139,12 @@ public class GameScene extends PixelScene {
             addBlobSprite(blob);
         }
         //添加英雄
-        hero = Dungeon.hero;
-        trace(hero.pos);
-        hero.place(Dungeon.hero.pos);
-        hero.updataeArmor();
-        mobs.addChild(hero);
+//        hero = Dungeon.hero;
+//        trace(hero.pos);
+        trace("添加英雄");
+        Dungeon.hero.place(Dungeon.hero.pos);
+        Dungeon.hero.updataeArmor();
+        addMobSprite(Dungeon.hero);
         //
         log = new GameLog();
         addChild(log);
@@ -449,15 +451,38 @@ public class GameScene extends PixelScene {
         plants.addChild(plant)
     }
 
-    public function addMobSprite(mob:Mob):void {
+    public function addMobSprite(mob:Char):void {
         mobs.addChild(mob);
         mob.reset();
-
     }
 
     public function addItemSprite(item:Item):void {
-        item.reset();
         blobs.addChild(item);
+        item.reset();
     }
+
+    public function removeAllSprite():void {
+        mobs.removeChildren();
+        blobs.removeChildren();
+        heaps.removeChildren();
+        plants.removeChildren();
+    }
+
+    public function rebuildScene():void {
+        removeAllSprite();
+        for each (var mob:Mob in mobs) {
+            addMobSprite(mob);
+        }
+        //
+        for each (var item:Item in Dungeon.droppedItems) {
+             addItemSprite(item);
+        }
+        //
+        for each (var blob:Blob in blobs) {
+             addBlobSprite(blob);
+        }
+        addMobSprite(Dungeon.hero);
+    }
+
 }
 }

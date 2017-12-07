@@ -24,8 +24,10 @@ public class Char extends Actor {
     public var actPriority:int;
     //血量
     public var HP:int;
+    public var MAXHP:int;
     //魔法
     public var HT:int;
+    public var MAXHT:int;
     public var SHLD:int;
     //攻击力
     public var attackSkill:int;
@@ -62,14 +64,16 @@ public class Char extends Actor {
     private static const POS:String = "pos";
     private static const TAG_HP:String = "HP";
     private static const TAG_HT:String = "HT";
+    private static const TAG_MAXHP:String = "MAXHP";
+    private static const TAG_MAXHT:String = "MAXHT";
     private static const TAG_SHLD:String = "SHLD";
     private static const BUFFS:String = "buffs";
 
+    private static const ALIGNMENT:String = "alignment";
     private static const IMAGEURL:String = "imageUrl";
+
     private static const ATTACKSKILL:String = "attackSkill";
     private static const DEFENSESKILL:String = "defenseSkill";
-
-
 
     public function Char() {
         pos = new Point();
@@ -82,7 +86,11 @@ public class Char extends Actor {
         rangeWeapon = new MissileWeapon();
         initDrawDebug();
     }
-
+    public function reset():Boolean {
+        x = SIZE * pos.x;
+        y = SIZE * pos.y;
+        return true;
+    }
     protected function initDrawDebug():void {
         if (Dungeon.isdebug) {
             addChild(DebugTool.makeImage(SIZE, 0xff00ff));
@@ -331,11 +339,19 @@ public class Char extends Actor {
      */
     override public function restoreFromBundle(bundle:Bundle):void {
         super.restoreFromBundle(bundle);
-        pos = bundle.getValue(POS);
+        var obj:Object = bundle.getValue(POS);
+        pos = new Point(obj.x, obj.y);
         HP = bundle.getInt(TAG_HP);
         HT = bundle.getInt(TAG_HT);
+        MAXHP = bundle.getInt(TAG_MAXHP);
+        MAXHT = bundle.getInt(TAG_MAXHT);
+        attackSkill = bundle.getInt(ATTACKSKILL);
+        defenseSkill = bundle.getInt(DEFENSESKILL);
         SHLD = bundle.getInt(TAG_SHLD);
-        buffs = bundle.getObject(BUFFS);
+        buffs = bundle.getBundlableList(BUFFS);
+        //
+        alignment = bundle.getString(ALIGNMENT);
+        imageUrl = bundle.getString(imageUrl);
     }
 
     /**
@@ -344,11 +360,20 @@ public class Char extends Actor {
      */
     override public function storeInBundle(bundle:Bundle):void {
         super.storeInBundle(bundle);
-        bundle.put(POS, pos);
-        bundle.put(TAG_HP, pos);
-        bundle.put(TAG_HT, pos);
-        bundle.put(TAG_SHLD, pos);
-        bundle.put(BUFFS, pos);
+        bundle.put(POS, {x: pos.x, y: pos.y});
+        bundle.put(TAG_HP, HP);
+        bundle.put(TAG_HT, HT);
+        bundle.put(TAG_SHLD, SHLD);
+        bundle.put(BUFFS, buffs);
+        //
+        bundle.put(TAG_MAXHP, MAXHP);
+        bundle.put(TAG_MAXHT, MAXHT);
+        bundle.put(ATTACKSKILL, attackSkill);
+        bundle.put(DEFENSESKILL, defenseSkill);
+        //
+        bundle.put(ALIGNMENT, alignment);
+        bundle.put(IMAGEURL, imageUrl);
+
     }
 }
 }

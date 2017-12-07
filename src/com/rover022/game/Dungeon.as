@@ -13,6 +13,7 @@ import com.rover022.game.levels.Level;
 import com.rover022.game.levels.SewerLevel;
 import com.rover022.game.levels.rooms.secret.SecretRoom;
 import com.rover022.game.levels.rooms.special.SpecialRoom;
+import com.rover022.game.scenes.GameScene;
 import com.rover022.game.utils.Bundlable;
 import com.rover022.game.utils.Bundle;
 
@@ -85,17 +86,14 @@ public class Dungeon {
         quickslot.reset();
         depth = 0;
         gold = 0;
-        droppedItems = new Array();
+        droppedItems = [];
         //任务系统
         Ghost.quest.reset();
         Wandmaker.quest.reset();
         //
         Generator.reset();
         Generator.initArtifacts();
-        hero = new DefaultHero();
-        hero.live();
         //
-        Badges.reset();
     }
 
     public static function isChallenged():Boolean {
@@ -135,15 +133,15 @@ public class Dungeon {
      * @param pos 英雄出生点
      */
     public static function switchLevel(level:Level, pos:Point):void {
+        Dungeon.level = level;
+        Dungeon.level.reset();
         if (pos == null) {
             pos = new Point();
         }
-        Dungeon.level = level;
         Actor.init();
         hero.pos = pos;
         hero.curAction = hero.lastAction = null;
         observe();
-        saveAll();
     }
 
     public static function observe():void {
@@ -166,11 +164,10 @@ public class Dungeon {
         var bundle:Bundle = new Bundle();
         version = MiniGame.version;
         bundle.put(VERSION, version);
-        bundle.put(HERO, hero);
         bundle.put(GOLD, gold);
         bundle.put(DEPTH, depth);
-        bundle.put(LEVEL, level);
-        bundle.put(BADGES, hero.belongings);
+        bundle.putBundlable(LEVEL, level);
+        bundle.putBundlable(HERO, hero);
         bundle.put(QUICKSLOT, quickslot);
         Bundle.write(bundle, fileName);
     }
@@ -187,20 +184,22 @@ public class Dungeon {
     public static function loadGame(fileName:String = WR_GAME_FILE, fullLoad:Boolean = true):void {
         var bundle:Bundle = Bundle.read(fileName);
         quickslot.reset();
-        level = null;
-        depth = bundle.getInt(DEPTH);
-        gold = bundle.getInt(GOLD);
-        hero = bundle.getBundle(HERO) as Hero;
-        level = bundle.getBundle(LEVEL) as Level;
-        droppedItems = bundle.getDroppedItems();
-        //
-        if (fullLoad) {
-            SpecialRoom.restoreRoomsFromBundle();
-            SecretRoom.restoreRoomsFromBundle();
+        if (bundle) {
+            depth = bundle.getInt(DEPTH);
+            gold = bundle.getInt(GOLD);
+            hero = bundle.getBundlable(HERO) as Hero;
+            level = bundle.getBundlable(LEVEL) as Level;
+            droppedItems = bundle.getBundlableList(DROPPED);
+            //
+            if (fullLoad) {
+                SpecialRoom.restoreRoomsFromBundle();
+                SecretRoom.restoreRoomsFromBundle();
+            }
+            Notes.restoreRoomsFromBundle();
+        } else {
+            //如果加载失败 或是加载的文件不纯在 启动新存档逻辑
+            Dungeon.init();
         }
-        Notes.restoreRoomsFromBundle();
-        //
-        Dungeon.init();
     }
 
     /**

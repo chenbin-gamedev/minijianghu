@@ -11,6 +11,7 @@ public class Belongings implements Bundlable {
     public var backpack:Bag = new Bag();
     public static var BACKPACK_SIZE:int = 20;
     public var owner:Hero;
+    //武器
     public var weapon:KindOfWeapon = null;
     //盔甲
     public var armor:Armor = null;
@@ -18,6 +19,11 @@ public class Belongings implements Bundlable {
     public var misc1:KindofMisc = null;
     //杂项2
     public var misc2:KindofMisc = null;
+
+    private static const WEAPON:String = "weapon";
+    private static const ARMOR:String = "armor";
+    private static const MISC1:String = "misc1";
+    private static const MISC2:String = "misc2";
 
     public function Belongings(hero:Hero) {
         this.owner = hero;
@@ -53,10 +59,29 @@ public class Belongings implements Bundlable {
         return null;
     }
 
-    public function restoreFromBundle(src:Bundle):void {
+    /**
+     * @inheritDoc
+     * @param src
+     */
+    public function restoreFromBundle(bundle:Bundle):void {
+        weapon = bundle.getBundle(WEAPON) as KindOfWeapon;
+        armor = bundle.getBundle(ARMOR) as Armor;
+        misc1 = bundle.getBundle(MISC1) as KindofMisc;
+        misc2 = bundle.getBundle(MISC2) as KindofMisc;
+        backpack.restoreFromBundle(bundle);
     }
 
-    public function storeInBundle(src:Bundle):void {
+    /**
+     * @inheritDoc
+     * @param src
+     */
+    public function storeInBundle(bundle:Bundle):void {
+
+        bundle.put(WEAPON, weapon);
+        bundle.put(ARMOR, armor);
+        bundle.put(MISC1, misc1);
+        bundle.put(MISC2, misc2);
+        backpack.storeInBundle(bundle);
     }
 }
 }

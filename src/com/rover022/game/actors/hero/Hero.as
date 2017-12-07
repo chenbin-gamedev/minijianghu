@@ -7,25 +7,23 @@ import com.rover022.game.actors.blobs.Blob;
 import com.rover022.game.actors.mobs.npcs.NPC;
 import com.rover022.game.items.Item;
 import com.rover022.game.items.KindOfWeapon;
-import com.rover022.game.items.weapon.missiles.MissileWeapon;
 import com.rover022.game.messages.Messages;
 import com.rover022.game.sprites.CharSprite;
+import com.rover022.game.utils.Bundle;
 
 import flash.geom.Point;
-
-import starling.animation.DelayedCall;
 
 import starling.core.Starling;
 
 public class Hero extends Char {
     public static const MAX_LEVEL:int = 99;
-    public static const ATTACK:String = "attackSkill";
-    public static const DEDENSE:String = "defenseSkill";
-    public static const STRENGTH:String = "STR";
-    public static const LEVEL:String = "leve";
-    public static const EXPERIENCE:String = "exp";
-    public static const HTBOOST:String = "htboost";
+    //
 
+    private static const STRENGTH:String = "STR";
+    private static const LEVEL:String = "leve";
+    private static const EXPERIENCE:String = "exp";
+    private static const HTBOOST:String = "htboost";
+    //
     public var curAction:HeroAction;
     public var lastAction:HeroAction;
 
@@ -360,6 +358,36 @@ public class Hero extends Char {
      */
     public function getLuck():Number {
         return _luck;
+    }
+
+    /**
+     * @inheritDoc
+     * @param bundle
+     */
+    override public function storeInBundle(bundle:Bundle):void {
+
+        bundle.put(STRENGTH, STR);
+
+        bundle.put(LEVEL, lvl);
+        bundle.put(EXPERIENCE, exp);
+
+        belongings.storeInBundle(bundle);
+        //
+        super.storeInBundle(bundle);
+    }
+
+    /**
+     * @inheritDoc
+     * @param bundle
+     */
+    override public function restoreFromBundle(bundle:Bundle):void {
+        super.restoreFromBundle(bundle);
+        //
+        STR = bundle.getInt(STRENGTH);
+        lvl = bundle.getInt(LEVEL);
+        exp = bundle.getInt(EXPERIENCE);
+        //
+        belongings.restoreFromBundle(bundle);
     }
 }
 }
