@@ -11,9 +11,22 @@ public class Test extends Sprite {
     public function Test() {
         super();
 
+
         testDropItem();
 //        testMapMod();
 
+//      testDraw()
+
+    }
+
+    private function testDraw():void {
+        var f_size:Number = 44;
+        var nBox:Sprite = new Sprite();
+        nBox.graphics.beginFill(0x00ff00, 1);
+        nBox.graphics.drawRect(0, 0, f_size, f_size);
+        nBox.graphics.drawRect(2, 2, f_size - 4, f_size - 4);
+        nBox.graphics.endFill();
+        addChild(nBox)
     }
 
     private function testDropItem():void {
@@ -22,6 +35,7 @@ public class Test extends Sprite {
             var item:Item = Generator.randomItem();
             trace(item);
         }
+
     }
 
     private function testMapMod():void {

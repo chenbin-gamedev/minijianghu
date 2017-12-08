@@ -5,11 +5,12 @@ import com.rover022.game.actors.hero.Hero;
 
 /**
  * 虚拟类
- * 装备道具类
+ * 可装备, 可道具类
  */
 public class EquipableItem extends Item {
     public static const AC_EQUIP:String = "EQUIP";
     public static const AC_UNEQUIP:String = "UNEQUIP";
+    public var parentVarName:String;
 
     public function EquipableItem() {
         super();
@@ -31,7 +32,7 @@ public class EquipableItem extends Item {
         return true;
     }
 
-    public function doUnequip(hero:Hero, b1:Boolean, b2:Boolean):Boolean {
+    public function doUnequip(hero:Hero, b1:Boolean = false, b2:Boolean = false):Boolean {
         Dungeon.quickslot.clearItem(this);
         updateQuickslot();
         return true;
@@ -41,10 +42,12 @@ public class EquipableItem extends Item {
         super.cast(hero, dst);
     }
 
-
-
     public function active(ch:Char):void {
 
+    }
+
+    public function getIndex(hero:Hero):int {
+        return -1;
     }
 }
 }

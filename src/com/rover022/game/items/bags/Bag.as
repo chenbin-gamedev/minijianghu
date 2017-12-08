@@ -25,6 +25,16 @@ public class Bag extends Item {
         return super.collect(src);
     }
 
+    public function addItem(item:Item):void {
+        if (items.indexOf(item) == -1) {
+            items.push(items);
+        }
+    }
+
+    public function remove(item:Item):void {
+
+    }
+
     /**
      * @inheritDoc
      * @param src

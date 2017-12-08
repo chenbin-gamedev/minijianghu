@@ -1,27 +1,21 @@
 package com.rover022.game {
 import com.rover022.game.actors.Actor;
 import com.rover022.game.actors.Char;
-import com.rover022.game.actors.hero.Hero;
 import com.rover022.game.actors.hero.CharClass;
+import com.rover022.game.actors.hero.Hero;
 import com.rover022.game.actors.mobs.Mob;
 import com.rover022.game.actors.mobs.npcs.Ghost;
 import com.rover022.game.actors.mobs.npcs.Wandmaker;
 import com.rover022.game.items.Generator;
-import com.rover022.game.items.Item;
 import com.rover022.game.journal.Notes;
+import com.rover022.game.levels.HallsLevel;
 import com.rover022.game.levels.Level;
 import com.rover022.game.levels.SewerLevel;
 import com.rover022.game.levels.rooms.secret.SecretRoom;
 import com.rover022.game.levels.rooms.special.SpecialRoom;
-import com.rover022.game.scenes.GameScene;
-import com.rover022.game.utils.Bundlable;
 import com.rover022.game.utils.Bundle;
 
-import flash.filesystem.File;
-import flash.filesystem.FileMode;
-import flash.filesystem.FileStream;
 import flash.geom.Point;
-import flash.utils.ByteArray;
 
 public class Dungeon {
     public static var isdebug:Boolean = true;
@@ -73,6 +67,9 @@ public class Dungeon {
      */
     public static function init():void {
         version = MiniGame.version;
+        level = new HallsLevel();
+        hero = new Hero();
+        //
         seed = Dungeon.randomSeed();
         Actor.clear();
         Actor.resetNextID();
@@ -202,6 +199,11 @@ public class Dungeon {
         }
     }
 
+
+    public static function deleteGame(fileName:String = WR_GAME_FILE):void {
+        Bundle.deleteGame(fileName);
+    }
+
     /**
      *  保存关卡 RG_DEPTH_FILE,MG_DEPTH_FILE,RN_DEPTH_FILE,WR_DEPTH_FILE
      * @param fileName
@@ -246,9 +248,7 @@ public class Dungeon {
         return "";
     }
 
-    public static function deleteGame():void {
 
-    }
 
     public static function fail():void {
 

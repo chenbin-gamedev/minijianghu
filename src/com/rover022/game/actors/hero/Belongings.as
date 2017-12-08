@@ -83,5 +83,9 @@ public class Belongings implements Bundlable {
         bundle.put(MISC2, misc2);
         backpack.storeInBundle(bundle);
     }
+
+    public function update():void {
+
+    }
 }
 }

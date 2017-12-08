@@ -19,7 +19,7 @@ public class Char extends Actor {
     public var pos:Point = new Point();
     public var ready:Boolean = true;
     //幸运度
-    protected var _luck:Number = 0.7;
+    protected var _luck:Number = 1;
     //优先级
     public var actPriority:int;
     //血量

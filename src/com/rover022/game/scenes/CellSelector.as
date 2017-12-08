@@ -23,12 +23,10 @@ public class CellSelector extends TouchArea {
 
     public function CellSelector() {
         super();
-        addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+        //addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
     }
 
-    override protected function onMouseDown(event:MouseEvent):void {
-        trace("onMouseDown")
-    }
+
 
     override protected function onTouchDown(event:TouchEvent):void {
         super.onTouchDown(event);

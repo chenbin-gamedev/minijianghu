@@ -118,56 +118,24 @@ public class GameScene extends PixelScene {
         healthIndicators = makeSprite();
         scene = this;
         //关卡设计面板初始化一次
-        interlevelScene.descend();
-        //假装先配置一个地下城
-        Dungeon.level = Level.makeNewLevel();
-        //
-        DungeonTilemap.setupVariance(Dungeon.level.map.length, Dungeon.seedCurDepth());
+        interlevelScene.enterDungeon();
+        //装配地面
+        //DungeonTilemap.setupVariance(Dungeon.level.map.length, Dungeon.seedCurDepth());
         tiles = new DungenTerrainTilemap();
         tiles.map(null, 6);
         terrain.addChild(tiles);
-        //添加怪物入场
-        trace("怪物数量:", Dungeon.level.mobs.length);
-        for each (var mob:Mob in Dungeon.level.mobs) {
-            addMobSprite(mob);
-            mob.beckon(Dungeon.hero.pos);
-        }
-        //添加障碍物
-        trace("障碍物数量:", Dungeon.level.blobs.length);
-        for each (var blob:Blob in Dungeon.level.blobs) {
-            blob.emitter = null;
-            addBlobSprite(blob);
-        }
-        //添加英雄
-//        hero = Dungeon.hero;
-//        trace(hero.pos);
-        trace("添加英雄");
-        Dungeon.hero.place(Dungeon.hero.pos);
-        Dungeon.hero.updataeArmor();
-        addMobSprite(Dungeon.hero);
         //
         log = new GameLog();
         addChild(log);
-        //放置道具
-        trace("道具数量:", Dungeon.droppedItems.length);
-        var dropped:Array = Dungeon.droppedItems;
-        for each (var item:Item in dropped) {
-            var pos:Point = Dungeon.level.randomRespawnCell();
-            if (item is Potion) {
-
-            } else if (item is Plant) {
-
-            } else if (item is Honeypot) {
-
-            }
-            Dungeon.level.drop(item, pos);
-        }
         //
         Dungeon.hero.next();
         //Camera
         fadeIn();
         //初始化点击事件
         selectCall(defaultCellListener);
+        //添加toolbar
+        toolbar.y = 540;
+        addChild(toolbar);
     }
 
     private function makeSprite():Sprite {
@@ -470,16 +438,16 @@ public class GameScene extends PixelScene {
 
     public function rebuildScene():void {
         removeAllSprite();
-        for each (var mob:Mob in mobs) {
+        for each (var mob:Mob in Dungeon.level.mobs) {
             addMobSprite(mob);
         }
         //
         for each (var item:Item in Dungeon.droppedItems) {
-             addItemSprite(item);
+            addItemSprite(item);
         }
         //
-        for each (var blob:Blob in blobs) {
-             addBlobSprite(blob);
+        for each (var blob:Blob in Dungeon.level.blobs) {
+            addBlobSprite(blob);
         }
         addMobSprite(Dungeon.hero);
     }

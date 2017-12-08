@@ -63,7 +63,7 @@ public class Bundle {
             stream.close();
             trace("读文件成功", dataString);
         } catch (e:Error) {
-            trace("读文件出错了", e);
+            trace("读文件出错了", fileName, e);
             return null;
         }
         var data:Object = JSON.parse(dataString);
@@ -193,6 +193,16 @@ public class Bundle {
 
     public function getArray(b:String):Array {
         return data[b]
+    }
+
+    public function getFileExists(fileName:String):Boolean {
+        var file:File = File.applicationStorageDirectory.resolvePath(fileName);
+        return file.exists;
+    }
+
+    public static function deleteGame(fileName:String):void {
+        var file:File = File.applicationStorageDirectory.resolvePath(fileName);
+        file.deleteFile();
     }
 }
 }

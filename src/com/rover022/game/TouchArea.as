@@ -1,7 +1,6 @@
 package com.rover022.game {
+import com.rover022.game.events.ItemEvent;
 import com.rover022.game.tiles.DungeonTilemap;
-
-import flash.events.MouseEvent;
 
 import starling.display.Sprite;
 import starling.events.Event;
@@ -15,15 +14,6 @@ public class TouchArea extends Sprite {
     public function TouchArea() {
         super();
         addEventListener(TouchEvent.TOUCH, isPressed);
-        addEventListener(Event.TRIGGERED, onClick);
-    }
-
-    protected function onClick(e:Event):void {
-        trace("onClick")
-    }
-
-    protected function onMouseDown(event:MouseEvent):void {
-        trace("onMouseDown")
     }
 
     protected function onTouchUp(event:TouchEvent):void {

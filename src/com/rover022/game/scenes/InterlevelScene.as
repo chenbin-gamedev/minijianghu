@@ -41,18 +41,10 @@ public class InterlevelScene extends PixelScene {
      * 进入地下城
      */
     public function enterDungeon():void {
-        var level:Level;
         if (Dungeon.hero == null) {
             Dungeon.init();
         }
-        if (Dungeon.depth == 0) {
-            level = Dungeon.newLevel();
-        } else {
-            trace("进入深层")
-            Dungeon.depth++;
-            level = Dungeon.loadLevel();
-        }
-        Dungeon.switchLevel(level, level.entrance);
+        Dungeon.switchLevel(Dungeon.level, Dungeon.level.entrance);
     }
 
     public function returnTo():void {

@@ -32,7 +32,7 @@ public class Generator {
      * @return
      */
     public static function randomItem():Item {
-        var luck:Number = 0.7;
+        var luck:Number = 1;
         if (Dungeon.hero != null) {
             luck = Dungeon.hero.getLuck();
         }

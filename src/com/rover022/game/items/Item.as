@@ -15,6 +15,7 @@ import flash.utils.getQualifiedClassName;
 
 import starling.animation.Transitions;
 import starling.display.Sprite;
+import starling.events.Event;
 import starling.text.TextField;
 
 public class Item extends Sprite implements Bundlable {
@@ -65,6 +66,11 @@ public class Item extends Sprite implements Bundlable {
     public var pos:Point;
 
     public function Item() {
+//        initDrawDebug();
+        addEventListener(Event.ADDED_TO_STAGE, onCreate);
+    }
+
+    private function onCreate(event:Event):void {
         initDrawDebug();
     }
 
@@ -257,6 +263,10 @@ public class Item extends Sprite implements Bundlable {
         levelKnown = bundle.getBoolean(LEVLE_KNOWN);
         cursed = bundle.getBoolean(CURSED);
         cursedKnown = bundle.getBoolean(CURSED_KNOW);
+    }
+
+    public function doSell(hero:Hero):void {
+        doDrop(hero);
     }
 }
 }

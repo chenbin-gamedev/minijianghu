@@ -87,47 +87,6 @@ public class Level implements Bundlable {
     }
 
     /**
-     * 测试用的数据
-     * @return
-     */
-    public static function makeNewLevel():Level {
-        Dungeon.level = new Level();
-        var level:Level = Dungeon.level;
-        level.setSize(6, 6);
-        level.map = [
-            [0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0]];
-        pathfinder = new Pathfinder();
-        pathfinder.loadMap(level.map, 6, 6);
-        //
-        level.mobs = [];
-        makeMob(new Point(5, 5));
-//        makeMob(new Point(4, 5));
-
-        //加入一个NPC
-//        var npcClass:Class = getDefinitionByName("com.rover022.minigame.actors.npcs.OldMan") as Class;
-//        var npcClass:Class = getDefinitionByName("com.rover022.game.actors.hero") as Class;
-        var npcClass:Class = getDefinitionByName("com.rover022.game.actors.mobs.npcs.NPC") as Class;
-        var npc:NPC = new npcClass();
-        npc.pos = Level.pointToCell(new Point(3, 5));
-        level.mobs.push(npc);
-
-        //
-        function makeMob(brokenPos:Point):void {
-            var mob:Mob = new Mob();
-            mob.spawn(Dungeon.depth);
-            mob.pos = Level.pointToCell(brokenPos);
-            GameScene.addMob(mob);
-        }
-
-        return level;
-    }
-
-    /**
      * 根据现有的数据 建立怪物 植物 和英雄
      */
     public function reset():void {

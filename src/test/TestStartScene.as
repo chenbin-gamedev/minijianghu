@@ -4,12 +4,17 @@ import com.rover022.game.MiniGame;
 import com.rover022.game.scenes.GameScene;
 import com.rover022.game.scenes.InterlevelScene;
 import com.rover022.game.scenes.StartScene;
+import com.rover022.game.utils.DebugTool;
+
+import starling.display.Button;
 
 import starling.events.Event;
 
 import utils.MenuButton;
 
 public class TestStartScene extends StartScene {
+    private var simBtn:Button;
+
     public function TestStartScene() {
         super();
     }
@@ -19,9 +24,43 @@ public class TestStartScene extends StartScene {
         var btn:MenuButton;
 
         btn = new MenuButton("加载");
-        btn.x = btn.width;
+
         addChild(btn);
         btn.addEventListener(Event.TRIGGERED, onStartClick);
+
+        btn = new MenuButton("新游戏");
+        btn.y = 30;
+        addChild(btn);
+        btn.addEventListener(Event.TRIGGERED, onNewClick);
+
+        btn = new MenuButton("删除");
+        btn.y = 60;
+        addChild(btn);
+        btn.addEventListener(Event.TRIGGERED, onDelClick);
+        //
+        simBtn = DebugTool.makeButton("load_2");
+        simBtn.addEventListener(Event.TRIGGERED, onLoadGameOn2Click);
+        simBtn.x = 80;
+        addChild(simBtn);
+
+    }
+
+    private function onLoadGameOn2Click(event:Event):void {
+        Dungeon.loadGame(WndTest.minisave);
+        //进入游戏场景
+        MiniGame.switchScene(GameScene);
+        MiniGame.scene.addChild(new WndTest());
+    }
+
+    private function onDelClick(event:Event):void {
+        Dungeon.deleteGame();
+    }
+
+    private function onNewClick(event:Event):void {
+        Dungeon.init();
+        //进入游戏场景
+        MiniGame.switchScene(GameScene);
+        MiniGame.scene.addChild(new WndTest());
     }
 
     public static function initTestFunButton(_x:Number, _y:Number, _txt:String, onLoadClick:Function):MenuButton {
@@ -33,14 +72,18 @@ public class TestStartScene extends StartScene {
     }
 
     private function onStartClick(event:Event):void {
-        startNewGame();
+//        startNewGame();
+        Dungeon.loadGame();
+        //进入游戏场景
+        MiniGame.switchScene(GameScene);
+        MiniGame.scene.addChild(new WndTest());
     }
 
     override public function startNewGame():void {
         //
         InterlevelScene.mode = InterlevelScene.DESCEND;
         //加载游戏数据
-        Dungeon.loadGame("11.dat");
+        Dungeon.loadGame();
         //进入游戏场景
         MiniGame.switchScene(GameScene);
         MiniGame.scene.addChild(new WndTest());
@@ -51,25 +94,61 @@ public class TestStartScene extends StartScene {
 import com.rover022.game.Dungeon;
 import com.rover022.game.levels.Level;
 import com.rover022.game.ui.Window;
+import com.rover022.game.utils.DebugTool;
 
+import starling.display.Button;
 import starling.events.Event;
 
-import test.TestStartScene;
-
-import utils.MenuButton;
-
+/**
+ * 游戏内页 弹出的小窗口 用来测试一系列功能
+ */
 class WndTest extends Window {
-    public function WndTest() {
-        var btn:MenuButton = TestStartScene.initTestFunButton(0, 0, "加载游戏", onLoadClick);
-        addChild(btn);
-        var _h:Number = btn.height;
-        btn = TestStartScene.initTestFunButton(0, _h, "保存游戏", onSaveClick);
-        addChild(btn);
+    public static const minisave:String = "test2.dat";
 
-        btn = TestStartScene.initTestFunButton(0, 640 - _h, "加载关卡", onLoadLevelClick);
-        addChild(btn);
-        btn = TestStartScene.initTestFunButton(0, 640 - _h * 2, "保存关卡", onSaveLevelClick);
-        addChild(btn);
+    public function WndTest() {
+        var simBtn:Button;
+
+        simBtn = DebugTool.makeButton("加载游戏");
+        simBtn.addEventListener(Event.TRIGGERED, onLoadClick);
+        addChild(simBtn);
+
+        simBtn = DebugTool.makeButton("保存游戏");
+        simBtn.y = 20;
+        simBtn.addEventListener(Event.TRIGGERED, onSaveClick);
+        addChild(simBtn);
+
+        simBtn = DebugTool.makeButton("load_2");
+        simBtn.addEventListener(Event.TRIGGERED, onLoadGameOn2Click);
+        simBtn.x = 80;
+        addChild(simBtn);
+
+        simBtn = DebugTool.makeButton("save_2");
+        simBtn.x = 80;
+        simBtn.y = 20;
+        simBtn.addEventListener(Event.TRIGGERED, onSaveGameOn2Click);
+        addChild(simBtn);
+
+        simBtn = DebugTool.makeButton("加载关卡");
+        simBtn.x = 0;
+        simBtn.y = 50;
+        simBtn.addEventListener(Event.TRIGGERED, onLoadLevelClick);
+        addChild(simBtn);
+
+        simBtn = DebugTool.makeButton("保存关卡");
+        simBtn.x = 80;
+        simBtn.y = 50;
+        simBtn.addEventListener(Event.TRIGGERED, onSaveLevelClick);
+        addChild(simBtn);
+
+    }
+
+    private function onLoadGameOn2Click(event:Event):void {
+        Dungeon.loadGame(WndTest.minisave);
+    }
+
+    private function onSaveGameOn2Click(event:Event):void {
+        Dungeon.saveGame(WndTest.minisave);
+        trace("保存文件到test2.dat");
     }
 
     private function onSaveLevelClick(e:Event):void {
