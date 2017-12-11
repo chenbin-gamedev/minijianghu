@@ -1,14 +1,10 @@
 package com.rover022.game.windows {
 import com.rover022.game.Dungeon;
 import com.rover022.game.actors.hero.Belongings;
-import com.rover022.game.actors.hero.Hero;
 import com.rover022.game.events.ItemEvent;
 import com.rover022.game.items.EquipableItem;
 import com.rover022.game.items.Item;
-import com.rover022.game.items.KindofMisc;
-import com.rover022.game.items.armor.Armor;
 import com.rover022.game.items.bags.Bag;
-import com.rover022.game.items.weapon.Weapon;
 import com.rover022.game.ui.ItemSlot;
 import com.rover022.game.utils.DebugTool;
 import com.rover022.game.windows.wnditems.BagCellListener;
@@ -105,11 +101,14 @@ public class WndBag extends WndTabbed {
                 if (item.doEquip(Dungeon.hero)) {
                     var itemSeat:int = getIndexByType(item);
                     //下层包裹移除
-                    containerLayout.removeItemSolt(selectCell);
+                    selectCell.removeFromLayOut();
+                    selectCell.setLayOut(equitLayout, itemSeat);
+
                     //上层装备层也移除已装备的 抛出这个移除装备
-                    var returnItem:ItemSlot = equitLayout.getItemSolt(itemSeat);
+                    var returnItem:ItemSlot = equitLayout.dataArray[itemSeat];
                     if (returnItem) {
-                        containerLayout.addItemSolt(returnItem);
+                        returnItem.removeFromLayOut();
+                        returnItem.setLayOut(containerLayout);
                     }
                     //
                     selectCell.unSelect();
@@ -130,12 +129,12 @@ public class WndBag extends WndTabbed {
     protected function onUnEquitClick(event:Event):void {
         var item:EquipableItem = getEquipableItem();
         if (item) {
-            var itemSeat:int = getIndexByType(item);
+            //var itemSeat:int = getIndexByType(item);
             if (item.doUnequip(Dungeon.hero)) {
                 //如果解除成功
-                equitLayout.removeItemSolt(selectCell);
+                selectCell.removeFromLayOut();
                 //
-                containerLayout.addItemSolt(selectCell);
+                selectCell.setLayOut(containerLayout);
                 //
                 selectCell.unSelect();
                 selectCell = null;

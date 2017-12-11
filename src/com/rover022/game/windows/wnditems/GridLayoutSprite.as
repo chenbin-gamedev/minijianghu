@@ -1,5 +1,6 @@
 package com.rover022.game.windows.wnditems {
 import com.rover022.game.items.Item;
+import com.rover022.game.ui.ItemSlot;
 
 import starling.display.DisplayObject;
 import starling.display.Sprite;
@@ -20,6 +21,12 @@ public class GridLayoutSprite extends Sprite {
     public function add(src:DisplayObject):void {
         src.x = (size % w) * c_width;
         src.y = int(size / w) * c_width;
+        addChild(src);
+    }
+
+    public function addItemSolt(src:ItemSlot, index:int):void {
+        src.x = (index % w) * c_width;
+        src.y = int(index / w) * c_width;
         addChild(src);
     }
 

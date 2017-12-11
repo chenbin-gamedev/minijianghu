@@ -3,6 +3,7 @@ import com.rover022.game.TouchArea;
 import com.rover022.game.events.ItemEvent;
 import com.rover022.game.items.Item;
 import com.rover022.game.utils.DebugTool;
+import com.rover022.game.windows.wnditems.GridLayoutSprite;
 
 import starling.display.Image;
 import starling.display.Sprite;
@@ -36,7 +37,6 @@ public class ItemSlot extends TouchArea {
         selectIcon.visible = false;
     }
 
-
     /**
      * 道具按钮被按下时候
      * @param e
@@ -64,6 +64,44 @@ public class ItemSlot extends TouchArea {
 
     public function select():void {
         selectIcon.visible = true;
+    }
+
+    public function removeFromLayOut():Boolean {
+        var parent:GridLayoutSprite = parent as GridLayoutSprite;
+        var index:int = parent.dataArray.indexOf(this);
+        if (index != -1) {
+            parent.dataArray[index] = null;
+            parent.removeChild(this);
+            return true
+        }
+        return false;
+    }
+
+    /**
+     * 装配进入
+     * @param equitLayout
+     * @param itemSeat
+     * @return
+     */
+    public function setLayOut(equitLayout:GridLayoutSprite, itemSeat:int = -1):Boolean {
+        var array:Array = equitLayout.dataArray;
+
+        if (itemSeat != -1) {
+            array[itemSeat] = this;
+            equitLayout.addItemSolt(this, itemSeat);
+            return true;
+        }
+
+        for (var i:int = 0; i < array.length; i++) {
+            var slot:ItemSlot = array[i];
+            if (slot == null) {
+                array[i] = this;
+                equitLayout.addItemSolt(this, i);
+                return true
+            }
+        }
+        return false;
+
     }
 }
 }
