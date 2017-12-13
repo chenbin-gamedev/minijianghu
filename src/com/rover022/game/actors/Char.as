@@ -3,6 +3,7 @@ import com.rover022.game.Dungeon;
 import com.rover022.game.MiniGame;
 import com.rover022.game.actors.buffs.Buff;
 import com.rover022.game.actors.hero.CharClass;
+import com.rover022.game.effects.FloattingText;
 import com.rover022.game.items.weapon.missiles.MissileWeapon;
 import com.rover022.game.tiles.DungeonTilemap;
 import com.rover022.game.utils.Bundle;
@@ -74,6 +75,7 @@ public class Char extends Actor {
 
     private static const ATTACKSKILL:String = "attackSkill";
     private static const DEFENSESKILL:String = "defenseSkill";
+    private var nameTxt:TextField;
 
     public function Char() {
         pos = new Point();
@@ -86,20 +88,23 @@ public class Char extends Actor {
         rangeWeapon = new MissileWeapon();
         initDrawDebug();
     }
+
     public function reset():Boolean {
         x = SIZE * pos.x;
         y = SIZE * pos.y;
         return true;
     }
-    protected function initDrawDebug():void {
+
+    protected function initDrawDebug(color:Number = 0xff00ff):void {
         if (Dungeon.isdebug) {
-            addChild(DebugTool.makeImage(SIZE, 0xff00ff));
+            addChild(DebugTool.makeImage(SIZE, color));
         }
         HPTxt = DebugTool.makeText(this, 14, 14, "1", 0, 0);
         HTTxt = DebugTool.makeText(this, 14, 14, "1", 30, 0);
         ACKTxt = DebugTool.makeText(this, 14, 14, "1", 0, 29);
         DEFTxt = DebugTool.makeText(this, 14, 14, "1", 30, 29);
-        updateSpriteState()
+        nameTxt = DebugTool.makeText(this, 58, 20, "??", 0, 2);
+        updateSpriteState();
     }
 
     public function updateSpriteState():void {
@@ -110,6 +115,7 @@ public class Char extends Actor {
         HTTxt.text = HT.toString();
         ACKTxt.text = attackSkill.toString();
         DEFTxt.text = defenseSkill.toString();
+        nameTxt.text = name;
     }
 
     public function attack(enemy:Char):Boolean {
@@ -129,6 +135,10 @@ public class Char extends Actor {
                 enemy.die();
             }
             trace("伤害值:", dmg, "剩余HP", enemy.HP);
+            FloattingText.show(enemy, dmg);
+            enemy.updateSpriteState();
+            updateSpriteState();
+            //
             return enemy.HP <= 0;
             //hit(this, enemy, false);
         }

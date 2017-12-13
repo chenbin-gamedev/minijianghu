@@ -4,7 +4,6 @@ import com.rover022.game.actors.Actor;
 import com.rover022.game.actors.Char;
 import com.rover022.game.actors.blobs.Blob;
 import com.rover022.game.actors.mobs.Mob;
-import com.rover022.game.actors.mobs.npcs.NPC;
 import com.rover022.game.items.Item;
 import com.rover022.game.levels.traps.Trap;
 import com.rover022.game.plants.Plant;
@@ -14,7 +13,6 @@ import com.rover022.game.utils.Bundle;
 import com.rover022.game.utils.Pathfinder;
 
 import flash.geom.Point;
-import flash.utils.getDefinitionByName;
 
 import starling.display.Sprite;
 
@@ -28,13 +26,7 @@ public class Level implements Bundlable {
     public var map:Array;
     public var visited:Array;
     public var mapped:Array;
-    public var discoverable:Array;
 
-    public var passable:Array;
-    public var losBlocking:Array;
-    public var secret:Array;
-    public var water:Array;
-    public var pit:Array;
     //
     public var plants:Array;
 
@@ -57,22 +49,25 @@ public class Level implements Bundlable {
     private static const WIDTH:String = "width";
     private static const HEIGHT:String = "height";
     private static const MAP:String = "map";
+    private static const MOBS:String = "mobs";
+    private static const BLOBS:String = "blobs";
+    private static const PLANTS:String = "plants";
+    private static const TRAPS:String = "traps";
     private static const VISITED:String = "visited";
     private static const MAPPED:String = "mapped";
     private static const ENTRANCE:String = "entrance";
     private static const EXIT:String = "exit";
     private static const LOCKED:String = "locked";
     private static const HEAPS:String = "heaps";
-    private static const PLANTS:String = "plants";
-    private static const TRAPS:String = "traps";
     private static const CUSTOM_TILES:String = "customTiles";
     private static const CUSTOM_WALLS:String = "customWalls";
-    private static const MOBS:String = "mobs";
-    private static const BLOBS:String = "blobs";
+
     private static const FEELING:String = "feeling";
     private var version:String = "1.0.1";
 
     public function Level() {
+        entrance = new Point(0, 0);
+        exit = new Point(5, 0);
     }
 
     public function create():void {
@@ -91,18 +86,6 @@ public class Level implements Bundlable {
      */
     public function reset():void {
         GameScene.scene.rebuildScene();
-    }
-
-    public function creatMod():void {
-
-    }
-
-    public function creatMods():void {
-
-    }
-
-    public function creatItems():void {
-
     }
 
     public function seal():void {
@@ -364,6 +347,31 @@ public class Level implements Bundlable {
         //可扩展数据
         bundle.putBundleList(PLANTS, plants);
         bundle.putBundleList(TRAPS, traps);
+    }
+
+    public function creatMod():void {
+
+    }
+
+    public function creatMods():void {
+
+    }
+
+    public function creatItems():void {
+
+    }
+
+    /**
+     * 该地图是否还有怪物
+     * @return
+     */
+    public function hasMob():Boolean {
+        for each (var mob:Mob  in mobs) {
+            if (mob.alignment == Char.ENEMY) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 }

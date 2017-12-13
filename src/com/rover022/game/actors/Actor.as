@@ -66,6 +66,7 @@ public class Actor extends Sprite implements Bundlable {
             //重置英雄功能
             Dungeon.hero.ready = true;
             Dungeon.hero.time = Actor.gameSpeed;
+            trace("英雄ready is true");
         }
     }
 

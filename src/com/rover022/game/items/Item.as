@@ -120,6 +120,8 @@ public class Item extends Sprite implements Bundlable {
                 trace("地面没有这个道具")
             }
             return true;
+        } else {
+            trace("拾取道具不成功");
         }
         return false;
     }
@@ -202,10 +204,10 @@ public class Item extends Sprite implements Bundlable {
      */
     public function collect(bag:Bag):Boolean {
 //        var items:Array = bag.items;
-//        if (bag.containsItem(this)) {
-//            //如果再次包含这个道具直接放回 一般不会这样
-//            return true;
-//        }
+        if (bag.containsItem(this)) {
+            trace("奇怪,包裹里面已经包含了这个对象");
+            return true;
+        }
 
         if (stackable) {
 //            for each (var item:Item in items) {
@@ -217,8 +219,7 @@ public class Item extends Sprite implements Bundlable {
 //            }
         }
         //如果包裹还有空间
-        bag.addItem(this);
-        return false;
+        return bag.addItem(this);
     }
 
     public function isSimilar(item:Item):Boolean {

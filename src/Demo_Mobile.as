@@ -24,7 +24,6 @@ import starling.utils.StringUtil;
 import starling.utils.SystemUtil;
 
 import test.TestStartScene;
-import test.TestWindow;
 
 import utils.ProgressBar;
 
@@ -78,7 +77,7 @@ public class Demo_Mobile extends Sprite {
                     });
         }
         //
-        addChild(new TestWindow(this));
+//        addChild(new TestWindow(this));
     }
 
     private function loadAssets(scaleFactor:int, onComplete:Function):void {

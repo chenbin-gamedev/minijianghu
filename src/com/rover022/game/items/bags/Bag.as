@@ -88,5 +88,20 @@ public class Bag extends Item {
             equitItems[i] = array[i];
         }
     }
+
+    /**
+     * 检查下面的包裹 是否包含这个对象 ()
+     * @param item
+     * @return
+     */
+    public function containsItem(item:Item):Boolean {
+        for each (var bundlable:Bundlable in items) {
+            if (bundlable == item) {
+                return true
+            }
+        }
+        return false;
+
+    }
 }
 }

@@ -3,6 +3,7 @@ import com.rover022.game.Dungeon;
 import com.rover022.game.actors.Actor;
 import com.rover022.game.actors.Char;
 import com.rover022.game.actors.blobs.Blob;
+import com.rover022.game.actors.blobs.ExitBlob;
 import com.rover022.game.actors.hero.Hero;
 import com.rover022.game.actors.mobs.Mob;
 import com.rover022.game.items.Heap;
@@ -436,7 +437,11 @@ public class GameScene extends PixelScene {
         plants.removeChildren();
     }
 
+    /**
+     * 游戏场景重新建立画面
+     */
     public function rebuildScene():void {
+        trace("游戏场景重新建立画面,目前地下城深度:", Dungeon.depth, "层.");
         removeAllSprite();
         for each (var mob:Mob in Dungeon.level.mobs) {
             addMobSprite(mob);
@@ -449,7 +454,13 @@ public class GameScene extends PixelScene {
         for each (var blob:Blob in Dungeon.level.blobs) {
             addBlobSprite(blob);
         }
+        var exit:ExitBlob = new ExitBlob();
+        exit.setPos(Dungeon.level.exit);
+        addBlobSprite(exit);
+        //
+        Dungeon.hero.pos = Dungeon.level.entrance;
         addMobSprite(Dungeon.hero);
+
     }
 
 }

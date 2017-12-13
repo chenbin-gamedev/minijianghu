@@ -13,6 +13,7 @@ import com.rover022.game.levels.Level;
 import com.rover022.game.levels.SewerLevel;
 import com.rover022.game.levels.rooms.secret.SecretRoom;
 import com.rover022.game.levels.rooms.special.SpecialRoom;
+import com.rover022.game.scenes.GameScene;
 import com.rover022.game.utils.Bundle;
 
 import flash.geom.Point;
@@ -97,12 +98,19 @@ public class Dungeon {
         return true;
     }
 
+    /**
+     * 进入下一层地下城
+     * @return
+     */
     public static function newLevel():Level {
         Dungeon.level = null;
         Actor.clear();
         depth++;
         var level:Level;
         switch (depth) {
+            case 0:
+                //level = new HallsLevel();
+                //break;
             case 1:
             case 2:
             case 3:
@@ -114,7 +122,9 @@ public class Dungeon {
                 level = new Level();
                 break;
         }
-        level.create();
+        Dungeon.level = level;
+        Dungeon.hero.ready = true;
+        GameScene.scene.rebuildScene();
         return level;
     }
 
@@ -137,6 +147,7 @@ public class Dungeon {
         }
         Actor.init();
         hero.pos = pos;
+        hero.ready = true;
         hero.curAction = hero.lastAction = null;
         observe();
     }
@@ -199,7 +210,6 @@ public class Dungeon {
         }
     }
 
-
     public static function deleteGame(fileName:String = WR_GAME_FILE):void {
         Bundle.deleteGame(fileName);
     }
@@ -247,8 +257,6 @@ public class Dungeon {
         }
         return "";
     }
-
-
 
     public static function fail():void {
 

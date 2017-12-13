@@ -1,6 +1,6 @@
 package com.rover022.game.actors.hero {
+import com.rover022.game.AssetSample;
 import com.rover022.game.Dungeon;
-import com.rover022.game.MovieClipSample;
 import com.rover022.game.actors.Actor;
 import com.rover022.game.actors.Char;
 import com.rover022.game.actors.blobs.Blob;
@@ -8,12 +8,16 @@ import com.rover022.game.actors.mobs.npcs.NPC;
 import com.rover022.game.items.Item;
 import com.rover022.game.items.KindOfWeapon;
 import com.rover022.game.messages.Messages;
+import com.rover022.game.scenes.GameScene;
 import com.rover022.game.sprites.CharSprite;
 import com.rover022.game.utils.Bundle;
+import com.rover022.game.windows.WndTalkMessage;
 
 import flash.geom.Point;
 
 import starling.core.Starling;
+
+import utils.PointUtil;
 
 public class Hero extends Char {
     public static const MAX_LEVEL:int = 99;
@@ -22,7 +26,7 @@ public class Hero extends Char {
     private static const STRENGTH:String = "STR";
     private static const LEVEL:String = "leve";
     private static const EXPERIENCE:String = "exp";
-    private static const HTBOOST:String = "htboost";
+
     //
     public var curAction:HeroAction;
     public var lastAction:HeroAction;
@@ -31,22 +35,30 @@ public class Hero extends Char {
     public var STR:int;
     public var lvl:int = 1;
     public var exp:int = 0;
-    public var HTBoost:int = 0;
     public var visibleEnemies:Array = [];
-    public var midVisionEnemies:Array = [];
     public var belongings:Belongings;
     public var resting:Boolean;
 
     public function Hero() {
         super();
-        attackSkill = 10;
-        defenseSkill = 5;
+        HP = 25;
+        HT = 25;
+        attackSkill = 20;
+        defenseSkill = 25;
         belongings = new Belongings(this);
         visibleEnemies = [];
         //
-
+        updateSpriteState();
     }
 
+    override protected function initDrawDebug(color:Number = 0xff00ff):void {
+        super.initDrawDebug(color);
+    }
+
+    /**
+     * 人物升级
+     * @param _exp
+     */
     public function earnExp(_exp:int):void {
         exp += _exp;
         var percent:Number = _exp / maxExp;
@@ -69,7 +81,7 @@ public class Hero extends Char {
         if (levelup) {
             trace(Messages.get(this, "new_level"));
             showState(CharSprite.POSITIVE, Messages.get(this, "level_up"));
-            MovieClipSample.play("SND_LEVELUP");
+            AssetSample.play("SND_LEVELUP");
         }
     }
 
@@ -127,11 +139,17 @@ public class Hero extends Char {
         if (cell.x == pos.x && cell.y == pos.y) {
             return false;
         }
+        //英雄范围控制
+        trace(Dungeon.level.mobs);
+        //
+
+        //
         var ch:Char;
         var item:Item;
         var blob:Blob;
         blob = Dungeon.level.findBlob(cell);
         if (blob) {
+            trace("找到障碍物");
             return false;
         }
         ch = Dungeon.level.findMod(cell);
@@ -161,7 +179,7 @@ public class Hero extends Char {
             }
         }
         //移动逻辑
-        if (cell == Dungeon.level.exit && Dungeon.depth < 26) {
+        if (PointUtil.equit(cell, Dungeon.level.exit) && Dungeon.depth < 32) {
             curAction = new HeroAction(HeroAction.Descend, cell);
         } else {
             curAction = new HeroAction(HeroAction.Move, cell);
@@ -229,32 +247,36 @@ public class Hero extends Char {
             //有攻击动作 +0.5秒(总1秒) 没有攻击动作就只有0.5秒;
 
             //Starling.juggler.delayCall(Actor.process, curAction.speedTime);
-            resting = false;
-            ready = false;
+            //resting = false;
+
             var isState:Boolean = false;
-            if (curAction.type == HeroAction.Move) {
-                isState = actMove(curAction);
-            } else if (curAction.type == HeroAction.Interact) {
-                isState = actInteract(curAction);
-            } else if (curAction.type == HeroAction.Buy) {
-                isState = actBuy(curAction);
-            } else if (curAction.type == HeroAction.PickUp) {
-                isState = actPickUp(curAction);
-            } else if (curAction.type == HeroAction.OpenChest) {
-                isState = actOpenChest(curAction);
-            } else if (curAction.type == HeroAction.Unlock) {
-                isState = actUnlock(curAction);
-            } else if (curAction.type == HeroAction.Descend) {
-                isState = actDescend(curAction);
-            } else if (curAction.type == HeroAction.Ascend) {
-                isState = actAscend(curAction);
-            } else if (curAction.type == HeroAction.Attack) {
-                isState = actAttack(curAction);
-            } else if (curAction.type == HeroAction.Alchemy) {
-                isState = actAlchemy(curAction);
+            switch (curAction.type) {
+                case HeroAction.Move:
+                    isState = actMove(curAction);
+                    break;
+                case HeroAction.PickUp:
+                    isState = actPickUp(curAction);
+                    break;
+                case HeroAction.OpenChest:
+                    isState = actOpenChest(curAction);
+                    break;
+                case HeroAction.Attack:
+                    isState = actAttack(curAction);
+                    break;
+                case HeroAction.Descend:
+                    Dungeon.newLevel();
+                    return true;
+                    break;
+                case HeroAction.Interact:
+                    isState = actInteract(curAction);
+                    break;
             }
-            trace("英雄这次", curAction.type, "行动花费时间:", time, "秒");
-            Starling.juggler.delayCall(Actor.process, time);
+            if (isState) {
+                ready = false;
+                trace("英雄这次", curAction.type, "行动花费时间:", time, "秒");
+                Starling.juggler.delayCall(Actor.process, time);
+
+            }
             return isState;
         }
     }
@@ -335,7 +357,10 @@ public class Hero extends Char {
     private function actInteract(action:HeroAction):Boolean {
         var npc:NPC = action.target as NPC;
         npc.interact();
-        return true;
+
+
+
+        return false;
     }
 
     override public function onCompleteTweener():void {
@@ -347,8 +372,14 @@ public class Hero extends Char {
     }
 
     private function actMove(action:HeroAction):Boolean {
-        trace("移动");
-        move(action.pos);
+        if (Dungeon.level.hasMob()) {
+            if (isRound(action.pos) == false) {
+                return false;
+            }
+            move(action.pos);
+        } else {
+            move(action.pos);
+        }
         return true;
     }
 
