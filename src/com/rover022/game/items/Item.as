@@ -5,6 +5,7 @@ import com.rover022.game.actors.hero.Hero;
 import com.rover022.game.items.bags.Bag;
 import com.rover022.game.scenes.GameScene;
 import com.rover022.game.tiles.DungeonTilemap;
+import com.rover022.game.ui.ItemSlot;
 import com.rover022.game.utils.Bundlable;
 import com.rover022.game.utils.Bundle;
 import com.rover022.game.utils.DebugTool;
@@ -39,10 +40,6 @@ public class Item extends Sprite implements Bundlable {
     private static const CURSED:String = "cursed";
     private static const CURSED_KNOW:String = "cursedKnown";
 
-    //
-    //public const TIME_TO_THROW:Number = 1;
-    //public const TIME_TO_PICK_UP:Number = 1;
-    //public const TIME_TO_DROP:Number = 1;
     //放下
     public const AC_DROP:String = "DORP";
     //扔
@@ -64,10 +61,19 @@ public class Item extends Sprite implements Bundlable {
     public var bones:Boolean = false;
     //出现的坐标点
     public var pos:Point;
+    public var itemSlot:ItemSlot;
 
     public function Item() {
 //        initDrawDebug();
         addEventListener(Event.ADDED_TO_STAGE, onCreate);
+    }
+
+    public function toString():String {
+        if (this is EquipableItem) {
+            return "EquipableItem";
+        } else {
+            return "item"
+        }
     }
 
     private function onCreate(event:Event):void {
@@ -107,18 +113,15 @@ public class Item extends Sprite implements Bundlable {
             var index:int = Dungeon.level.blobs.indexOf(this);
             if (index != -1) {
                 Dungeon.level.blobs.removeAt(index);
+                //播放收取道具动画;
+                TweenUtils.move(this, new Point(0, 0), Transitions.EASE_IN_BACK);
+                GameScene.pickUp(this, hero.pos);
+            } else {
+                trace("地面没有这个道具")
             }
-            //播放收取道具动画;
-            TweenUtils.move(this, new Point(0, 0), Transitions.EASE_IN_BACK);
-            GameScene.pickUp(this, hero.pos);
-//            hero.spendAndNext(TIME_TO_PICK_UP);
             return true;
         }
         return false;
-    }
-
-    public function doDrop(hero:Hero):void {
-
     }
 
     public function visiblyUpgradoble():int {
@@ -173,6 +176,10 @@ public class Item extends Sprite implements Bundlable {
         }
     }
 
+    private function doDrop(hero:Hero):void {
+
+    }
+
     /**
      * 把道具甩到这个坐标点去
      * @param user 使用这个武器者
@@ -190,33 +197,27 @@ public class Item extends Sprite implements Bundlable {
      * 用英雄的包包去装载这个道具
      * 如果成功返回true
      *
-     * @param container
+     * @param bag Bag
      * @return
      */
-    public function collect(container:Bag):Boolean {
-        var items:Array = container.items;
-
-        if (items.indexOf(this) != -1) {
-            //如果再次包含这个道具直接放回 一般不会这样
-            return true;
-        }
+    public function collect(bag:Bag):Boolean {
+//        var items:Array = bag.items;
+//        if (bag.containsItem(this)) {
+//            //如果再次包含这个道具直接放回 一般不会这样
+//            return true;
+//        }
 
         if (stackable) {
-            for each (var item:Item in items) {
-                if (isSimilar(item)) {
-                    item.quantity += quantity;
-                    item.updateQuickslot();
-                    return true
-                }
-            }
+//            for each (var item:Item in items) {
+//                if (isSimilar(item)) {
+//                    item.quantity += quantity;
+//                    item.updateQuickslot();
+//                    return true
+//                }
+//            }
         }
         //如果包裹还有空间
-        if (items.length < container.size) {
-            items.push(this);
-            Dungeon.quickslot.replacePlaceholder(this);
-            updateQuickslot();
-            return true;
-        }
+        bag.addItem(this);
         return false;
     }
 
@@ -265,8 +266,10 @@ public class Item extends Sprite implements Bundlable {
         cursedKnown = bundle.getBoolean(CURSED_KNOW);
     }
 
-    public function doSell(hero:Hero):void {
-        doDrop(hero);
+    public function makeSlot():void {
+        if (itemSlot == null) {
+            itemSlot = new ItemSlot(this);
+        }
     }
 }
 }

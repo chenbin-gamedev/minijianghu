@@ -24,6 +24,7 @@ import starling.utils.StringUtil;
 import starling.utils.SystemUtil;
 
 import test.TestStartScene;
+import test.TestWindow;
 
 import utils.ProgressBar;
 
@@ -42,7 +43,6 @@ public class Demo_Mobile extends Sprite {
     private var _progressBar:ProgressBar;
 
     public function Demo_Mobile() {
-
 
         var iOS:Boolean = SystemUtil.platform == "IOS";
         var stageSize:Rectangle = new Rectangle(0, 0, StageWidth, StageHeight);
@@ -77,6 +77,8 @@ public class Demo_Mobile extends Sprite {
                         _starling.stop(true);
                     });
         }
+        //
+        addChild(new TestWindow(this));
     }
 
     private function loadAssets(scaleFactor:int, onComplete:Function):void {

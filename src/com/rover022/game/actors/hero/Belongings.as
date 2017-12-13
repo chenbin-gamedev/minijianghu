@@ -51,13 +51,6 @@ public class Belongings implements Bundlable {
 
     }
 
-    public function randomUnequipped():Item {
-        if (backpack.items.length > 0) {
-            var _index:int = Math.random() * backpack.items.length;
-            return backpack.items[_index];
-        }
-        return null;
-    }
 
     /**
      * @inheritDoc

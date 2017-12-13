@@ -5,9 +5,15 @@ import com.rover022.game.items.Item;
 import com.rover022.game.utils.DebugTool;
 import com.rover022.game.windows.wnditems.GridLayoutSprite;
 
+import flash.geom.Point;
+import flash.utils.getDefinitionByName;
+import flash.utils.getQualifiedClassName;
+
 import starling.display.Image;
 import starling.display.Sprite;
+
 import starling.events.TouchEvent;
+import starling.text.TextField;
 
 public class ItemSlot extends TouchArea {
     public var item:Item = null;
@@ -19,6 +25,7 @@ public class ItemSlot extends TouchArea {
     //
 
     private static const SIZE:int = 58;
+    public var pos:Point = new Point();
 
     public function ItemSlot(item:Item = null) {
 
@@ -34,7 +41,14 @@ public class ItemSlot extends TouchArea {
         selectIcon = DebugTool.makeRectImage(SIZE, 0xd7cc19);
         addChild(selectIcon);
 
+        var text:TextField = new TextField(44, 20, "test");
+        if (item) {
+            var _txt:String = getQualifiedClassName(item).split("::")[1]
+            text.text = _txt;
+        }
+        addChild(text);
         selectIcon.visible = false;
+//        addEventListener(Event.ADDED_TO_STAGE, onAdd)
     }
 
     /**
@@ -51,7 +65,7 @@ public class ItemSlot extends TouchArea {
     }
 
     public function setEnable(b:Boolean):void {
-
+        enbale = b;
     }
 
     public function setItem(src:Item):void {
@@ -66,42 +80,7 @@ public class ItemSlot extends TouchArea {
         selectIcon.visible = true;
     }
 
-    public function removeFromLayOut():Boolean {
-        var parent:GridLayoutSprite = parent as GridLayoutSprite;
-        var index:int = parent.dataArray.indexOf(this);
-        if (index != -1) {
-            parent.dataArray[index] = null;
-            parent.removeChild(this);
-            return true
-        }
-        return false;
-    }
 
-    /**
-     * 装配进入
-     * @param equitLayout
-     * @param itemSeat
-     * @return
-     */
-    public function setLayOut(equitLayout:GridLayoutSprite, itemSeat:int = -1):Boolean {
-        var array:Array = equitLayout.dataArray;
 
-        if (itemSeat != -1) {
-            array[itemSeat] = this;
-            equitLayout.addItemSolt(this, itemSeat);
-            return true;
-        }
-
-        for (var i:int = 0; i < array.length; i++) {
-            var slot:ItemSlot = array[i];
-            if (slot == null) {
-                array[i] = this;
-                equitLayout.addItemSolt(this, i);
-                return true
-            }
-        }
-        return false;
-
-    }
 }
 }

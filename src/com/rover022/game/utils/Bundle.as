@@ -116,9 +116,13 @@ public class Bundle {
         }
         var finArray:Array = [];
         for (var i:int = 0; i < array.length; i++) {
-            var o:Object = array[i].data;
-            var bb:Bundle = new Bundle(o);
-            var bundle:Bundlable = bb.getObject();
+            var bb:Bundle = null;
+            var bundle:Bundlable = null;
+            if (array[i]) {
+                var o:Object = array[i].data;
+                bb = new Bundle(o);
+                bundle = bb.getObject();
+            }
             finArray.push(bundle);
         }
         return finArray;
@@ -176,15 +180,35 @@ public class Bundle {
         }
         var _arr:Array = [];
         for (var i:int = 0; i < bundles.length; i++) {
-            var newbundle:Bundle = new Bundle();
+            var newbundle:Bundle = null;
             var object:Bundlable = bundles[i];
-            //把类名丢进去
-            newbundle.put(CLASS_NAME, getQualifiedClassName(object));
-            //
-            object.storeInBundle(newbundle);
+            if (object) {
+                newbundle = new Bundle();
+                //把类名丢进去
+                newbundle.put(CLASS_NAME, getQualifiedClassName(object));
+                //
+                object.storeInBundle(newbundle);
+            }
             _arr.push(newbundle);
         }
         data[_key] = _arr;
+    }
+
+    /**
+     *
+     * @param _key
+     * @param bundles  里面放置 实现了Bundlable 对象
+     */
+    public function putBundleListVector(_key:String, bundles:Vector.<Bundlable>):void {
+        if (bundles == null) {
+            data[_key] = bundles;
+            return;
+        }
+        var _arr:Array = [];
+        for (var i:int = 0; i < bundles.length; i++) {
+            _arr.push(bundles[i]);
+        }
+        putBundleList(_key, _arr);
     }
 
     public function getBoolean(b:String):Boolean {
@@ -192,7 +216,7 @@ public class Bundle {
     }
 
     public function getArray(b:String):Array {
-        return data[b]
+        return data[b];
     }
 
     public function getFileExists(fileName:String):Boolean {

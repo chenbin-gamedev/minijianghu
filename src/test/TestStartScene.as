@@ -1,4 +1,5 @@
 package test {
+import com.bit101.components.Window;
 import com.rover022.game.Dungeon;
 import com.rover022.game.MiniGame;
 import com.rover022.game.scenes.GameScene;
@@ -42,6 +43,8 @@ public class TestStartScene extends StartScene {
         simBtn.addEventListener(Event.TRIGGERED, onLoadGameOn2Click);
         simBtn.x = 80;
         addChild(simBtn);
+        //
+
 
     }
 

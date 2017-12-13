@@ -30,7 +30,9 @@ public class Weapon extends KindOfWeapon {
 
     override public function doEquip(hero:Hero):Boolean {
         if (hero.belongings.weapon != this) {
-            hero.belongings.weapon.doUnequip(hero);
+            if (hero.belongings.weapon) {
+                hero.belongings.weapon.doUnequip(hero);
+            }
             hero.belongings.weapon = this;
             return true;
         } else {
